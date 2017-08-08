@@ -9,7 +9,7 @@ function createPerson(name, age) {
   return o
 }
 ```
-**缺点：**不能用instanceof检测对象类型，没有解决对象识别的问题。
+**缺点：** 不能用instanceof检测对象类型，没有解决对象识别的问题。
 ### 构造函数模式
 ```
 function Person(name, age) {
