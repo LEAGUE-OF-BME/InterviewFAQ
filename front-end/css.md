@@ -23,3 +23,16 @@ box-sizing: border-box;
 
 ----------
 Geeook 于 2017/8/9 21:45:13 
+## 元素消失的四种CSS方法
+```css
+visibility: hidden;
+opacity: 0;
+position: absolute; left: -1000px;
+display: none;
+```
+> ~~ width: 0; height: 0; ~~
+> 
+> ~~ z-index: -100; ~~
+
+----------
+Geeook created at 2017/8/9 23:06:32 
