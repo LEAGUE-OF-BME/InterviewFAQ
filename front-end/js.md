@@ -291,3 +291,25 @@ cookie曾经用于客户端存储，虽然是合法的，但仅仅是因为别�
 ----------
 Geeook 于 2017/8/9 10:51:08 
 ## 继承
+
+## null vs undefined
+大多数计算机语言，有且仅有一个表示"无"的值。有点奇怪的是，JavaScript语言居然有两个表示"无"的值：undefined和null。
+**相似性：**
+1. 变量赋值时几乎无区别
+```javascript
+var a = undefined;
+var a = null;
+```
+2. 条件判断时都自动转为false
+```javascript
+if (!undefined) 
+    console.log('undefined is false');
+// undefined is false
+
+if (!null) 
+    console.log('null is false');
+// null is false
+
+undefined == null
+// true
+```

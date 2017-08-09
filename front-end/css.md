@@ -10,6 +10,7 @@ width和height只包含content。
 ### IE盒模型
 ![](https://mdn.mozillademos.org/files/13649/box-model-alt-small.png)
 width和height包含content、padding和border
+
 在非IE中使用IE盒模型：在CSS中设置box-sizing属性为border-box（默认是content-box）
 
 **最佳实践：**
@@ -19,3 +20,6 @@ box-sizing: border-box;
 -webkit-box-sizing: border-box;
 ```
 这样可以多浏览器兼容，保持一致。
+
+----------
+Geeook 于 2017/8/9 21:45:13 
