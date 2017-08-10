@@ -6,7 +6,7 @@ createCDATASection(): creates a new CDATA section node, and returns it.
 
 createComment(): creates a new comment node, and returns it.
 
-createDocumentFragment(): Creates a new empty DocumentFragment.
+createDocumentFragment(): creates a new empty DocumentFragment.
 
 createElement(): creates the HTML element specified by tagName, or an HTMLUnknownElement if tagName isn't recognized.
 
@@ -24,7 +24,7 @@ getElementsByName()
 
 getElementsByTagName()
 
-getElementsByTagNameNS(): Returns a list of elements with the given tag name belonging to the given namespace.
+getElementsByTagNameNS(): returns a list of elements with the given tag name belonging to the given namespace.
 
 ----------
 Geeook created at 2017/8/9 23:02:06 
