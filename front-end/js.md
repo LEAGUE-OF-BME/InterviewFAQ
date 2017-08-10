@@ -80,7 +80,7 @@ alert(p1.friends === p2.friends) // true
 ```
 如果我们的初衷就是像这样在所有实例中共享一个数组，那么就没有问题，但是实例一般都是要有属于自己的全部属性。正是如此，我们很少单独使用原型模式。
 ### 组合使用构造函数模式和原型模式
-创建自定义对象的最常见的方式就是组合使用构造函数模式和原型模式。构造函数用于定义实例属性，原型模式用于定义方法和共享属性。
+<a name="1" id="1"> </a>创建自定义对象的最常见的方式就是组合使用构造函数模式和原型模式。构造函数用于定义实例属性，原型模式用于定义方法和共享属性。
 ```javascript
 function Person(name, age) {
   this.name = name
@@ -178,7 +178,7 @@ p.sayName()
 
 **缺点：** 同寄生构造函数模式一样，无法使用instanceof检测对象类型。
 ### create()方法
-ECMAScript5提出Object.create()方法，直接利用对象生成实例，不需要new关键字。
+<a name="2" id="2"> </a>ECMAScript5提出Object.create()方法，直接利用对象生成实例，不需要new关键字。
 ```javascript
 var Person = {
   name: "Geeook",
@@ -261,6 +261,233 @@ m instanceof Person // true
 
 ----------
 Geeook 于 2017/8/8 21:56:06 
+## 继承
+### 原型链
+```javascript
+function Person() {
+  this.name = "Geeook"
+}
+
+function Man() {
+  this.gender = "male"
+}
+
+// 继承
+Man.prototype = new Person
+
+var m = new Man
+console.log(m.name) // Geeook
+```
+**注意：**
+1. 现在m.constructor指向Person，是因为Man的原型指向Person的原型，然后这个原型对象的constructor属性指向Person。
+2. 默认原型都指向Object.prototype。
+3. 确定原型和实例的关系：instanceof操作符和isPrototypeOf方法。
+4. 添加原型方法的代码一定要在替换原型之后，且不能用对象字面量的形式。
+
+**问题：**
+1. 包含引用类型值的原型。通过原型实现继承时，一个实例变成了另一个类型的原型，实例属性变成原型属性，不想被共享的属性现在被共享了。
+
+**e.g.**
+```javascript
+function Person() {
+  this.name = "Geeook"
+  this.friends = ["Kelly", "RengJruin", "Coder"]
+}
+
+function Man() {
+  this.gender = "male"
+}
+
+Man.prototype = new Person
+
+var m1 = new Man
+m1.friends.push("Kai")
+console.log(m1.friends)
+var m2 = new Man
+console.log(m2.friends)
+```
+2. 创建子类型的实例时，不能向超类型的构造函数传递参数。应该说是没有办法在不影响所有对象实例的情况下给超类型的构造函数传递参数。
+### 借用构造函数
+为了解决原型中包含引用值类型问题，引入了**借用构造函数**的技术（又称为伪造对象或经典继承）。基本思想就是在子类的构造函数中调用父类的构造函数。
+```javascript
+function Person() {
+  this.friends = ["Kelly", "RengJruin", "Coder"]
+}
+
+function Man() {
+  // 继承
+  Person.call(this)
+}
+
+var m1 = new Man
+m1.friends.push("Kai")
+console.log(m1.friends) // ["Kelly", "RengJruin", "Coder", "Kai"]
+var m2 = new Man
+console.log(m2.friends) // ["Kelly", "RengJruin", "Coder"]
+```
+**优势：** 可以在子类构造函数中向父类构造函数传递参数。注意先调用构造函数，再添加新属性，避免覆盖。
+```javascript
+function Person(name) {
+  this.name = name
+}
+
+function Man() {
+  // 继承
+  Person.call(this, "Geeook")
+  this.age = 23
+}
+
+var m = new Man
+console.log(m.name)
+console.log(m.age)
+```
+**问题：** 如果仅仅是借用构造函数，就无法避免构造函数模式存在的问题——方法不能复用。而且在父类原型上定义的方法对子类实例是不可见的。
+### 组合继承
+组合继承又称为伪经典继承，组合使用原型链和借用构造函数技术。通过原型链实现对原型属性和方法的继承，通过借用构造函数实现对实例属性的继承。（哇，这句话好熟悉。没错！在<a href="#1">创造对象的组合模式</a>中也有这么一句话。）
+```javascript
+function Person(name) {
+  this.name = name
+  this.friends = ["Kelly", "RengJruin", "Coder"]
+}
+
+Person.prototype.sayName = function () {
+  console.log(this.name)
+}
+
+function Man(name, age) {
+  Person.call(this, name) // 第二次调用Person()
+  this.age = age
+}
+
+Man.prototype = new Person // 第一次调用Person()
+Man.prototype.constructor = Man
+Man.prototype.sayAge = function () {
+  console.log(this.age)
+}
+
+var m1 = new Man("Geeook", 23)
+m1.friends.push("Kai")
+console.log(m1.friends)
+m1.sayName()
+m1.sayAge()
+
+var m2 = new Man("Young", 24)
+console.log(m2.friends)
+m2.sayName()
+m2.sayAge()
+```
+组合继承是JavaScript中最常用的继承模式，而且可以用**instanceof**和**isPrototypeOf()**判断对象类型。
+
+**缺点：** 调用两次父类构造函数。如上代码注释所示：一次是在创建子类原型的时候，另一次是在子类构造函数内部。所以本来子类型的实例通过原型链会包含父类型对象的全部实例属性，但我们不得不在调用子类型的构造函数时重写这些属性。
+### 原型式继承
+道格拉斯引入了原型式继承，这种方法没有严格意义上的构造函数，主要思想就是借助原型可以基于已有的对象创建新的对象，同时不需要创建自定义类型。
+```javascript
+// 道格拉斯给出如下函数，从本质上来看就是对传入对象执行了一次浅复制
+function object(o) {
+  function F() { }
+  F.prototype = o
+  return new F
+}
+
+var person = {
+  name: "Geeook",
+  friends: ["Kelly", "RengJruin", "Coder"]
+}
+
+var anotherPerson = object(person)
+anotherPerson.name = "Kelly"
+anotherPerson.friends.push("Kai")
+
+var yetAnotherPerson = object(person)
+yetAnotherPerson.name = "Young"
+yetAnotherPerson.friends.push("Hang")
+
+console.log(person.friends) // ["Kelly", "RengJruin", "Coder", "Kai", "Hang"]
+```
+ECMAScript5新增<a href="#2">Object.create()</a>方法规范化了原型式继承。
+
+**优势：** 在不愿意创建构造函数，只是想让一个对象和另一个对象保持类似的情况下使用原型式继承非常方便。
+
+**缺点：** 原型模式普遍存在的问题——引用类型的属性被共享。
+### 寄生式继承
+道格拉斯推广了寄生式继承，思路就是创建一个仅用于封装继承过程的函数，函数内部增强对象并返回。
+```javascript
+function object(o) {
+  function F() { }
+  F.prototype = o
+  return new F
+}
+
+function createAnother(original) {
+  var clone = object(original) // 创建
+  clone.sayName = function () { // 增强
+    console.log(this.name)
+  }
+  return clone
+}
+
+var person = {
+  name: "Geeook",
+  friends: ["Kelly", "RengJruin", "Coder"]
+}
+
+var another = createAnother(person)
+another.sayName()
+```
+**优势：** 在主要考虑对象，而不想自定义类型和构造函数的情况下，使用寄生式继承很方便。
+
+**缺点：** 与构造函数模式类似的问题——函数不能被复用。
+### 寄生组合式继承
+为了解决前述组合继承存在的调用两次父类构造函数的问题，引入了寄生组合式继承。我们不必为了指定子类的原型而调用父类的构造函数，我们所需要的无非就是父类原型的副本，或者说无非就是想让子类的原型指向父类的原型。所以我们就可以使用寄生式继承来继承父类的原型，然后将结果指定给子类的原型。
+```javascript
+function inheritPrototype(subType, superType) {
+  var prototype = object(superType.prototype) // 前面已经定义过了，不再重复
+  prototype.constuctor = subType
+  subType.prototype = prototype
+}
+
+function Person(name) {
+  this.name = name
+  this.friends = ["Kelly", "RengJruin", "Coder"]
+}
+
+Person.prototype.sayName = function () {
+  console.log(this.name)
+}
+
+function Man(name, age) {
+  Person.call(this, name)
+  this.age = age
+}
+
+// 只需要替换这一句就行
+// Man.prototype = new Person
+inheritPrototype(Man, Person)
+
+Man.prototype.sayAge = function () {
+  console.log(this.age)
+}
+
+var m1 = new Man("Geeook", 23)
+m1.friends.push("Kai")
+console.log(m1.friends)
+m1.sayName()
+m1.sayAge()
+
+var m2 = new Man("Young", 24)
+console.log(m2.friends)
+m2.sayName()
+m2.sayAge()
+```
+**优势：** 
+1. 这种模式的高效体现在只调用了一次父类的构造函数，避免了在子类的原型上创建不必要的多余属性。
+2. 保持原型链不变，可以使用**instanceof**和**isPrototypeOf()**
+
+开发人员普遍认为这是引用类型最理想的继承范式。
+
+----------
+Geeook created at 2017/8/10 14:02:11 
+## \__proto\__和prototype的区别
 ## Session、Cookie、 LocalStorage、 SessionStorage对比
 ### 基本概念
 由于HTTP协议是无状态的，所以服务器无法知道两次请求是否来自同一个用户、同一个浏览器，于是就有了session和cookie来记住状态信息。
@@ -296,28 +523,6 @@ cookie曾经用于客户端存储，虽然是合法的，但仅仅是因为别�
 
 ----------
 Geeook 于 2017/8/9 10:51:08 
-## 继承
-### 原型链
-```javascript
-function Person() {
-  this.name = "Geeook"
-}
-
-function Man() {
-  this.gender = "male"
-}
-
-// 继承
-Man.prototype = new Person
-
-var m = new Man
-console.log(m.name) // Geeook
-```
-1. 注意：现在m.constructor指向Person，是因为Man的原型指向Person的原型，然后这个原型对象的constructor属性指向Person。
-2. 
-
-
-
 ## null vs undefined
 大多数计算机语言，有且仅有一个表示"无"的值。有点奇怪的是，JavaScript语言居然有两个表示"无"的值：undefined和null。
 ### 相似性：
@@ -366,7 +571,7 @@ Number(undefined) // NaN
 3. 对象没有赋值的属性，该属性的值为undefined。
 4. 函数没有返回值时，默认返回undefined。
 
-> 转载自：[http://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html](阮一峰的网络日志：undefined与null的区别")
+> 转载自：[阮一峰的网络日志：undefined与null的区别](http://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html)
 
 ----------
 Geeook 于 2017/8/9 22:29:31 

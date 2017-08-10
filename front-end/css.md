@@ -30,9 +30,9 @@ opacity: 0;
 position: absolute; left: -1000px;
 display: none;
 ```
-> ~~ width: 0; height: 0; ~~
-> 
-> ~~ z-index: -100; ~~
+~~width: 0; height: 0;~~
+
+~~z-index: -100;~~
 
 ----------
 Geeook created at 2017/8/9 23:06:32 
