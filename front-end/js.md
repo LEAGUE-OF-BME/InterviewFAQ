@@ -279,7 +279,7 @@ var m = new Man
 console.log(m.name) // Geeook
 ```
 **注意：**
-1. 现在m.constructor指向Person，是因为Man的原型指向Person的原型，然后这个原型对象的constructor属性指向Person。
+1. 现在m.constructor指向Person，是因为Man的原型对象指向Person的原型对象，然后这个原型对象的constructor属性指向Person。
 2. 默认原型都指向Object.prototype。
 3. 确定原型和实例的关系：instanceof操作符和isPrototypeOf方法。
 4. 添加原型方法的代码一定要在替换原型之后，且不能用对象字面量的形式。
@@ -488,7 +488,29 @@ m2.sayAge()
 ----------
 Geeook created at 2017/8/10 14:02:11 
 ## \__proto\__和prototype的区别
+![](/image/原型链图解1.png)
+![](/image/原型链图解.png)
+![](/image/原型链图解2.png)
 
+**详解：**
+1. 所有的对象都有一个内置属性\__proto\__（隐式原型）或者说是 [[prototype]]，在ES5之前没有标准的方法访问这个内置属性，但是大多数浏览器都支持通过\__proto\__来访问。ES5中有了对于这个内置属性标准的Get方法**Object.getPrototypeOf()**。
+2. 所有的函数都有prototype属性，并且只有函数有。
+3. 在声明函数的时候，会自动创建一个对象(原型)，将引用赋给了函数的prototype属性，并且原型的constructor属性指向该函数，如果修改了函数的prototype属性，那么原型的constructor属性也会跟着改变，于是constructor属性和原来的构造函数也就切断了联系。
+4. 用该函数创建实例时，所有实例的\__proto\__属性都指向刚创建的原型，constructor属性（通过原型对象）都指向构造函数。
+5. 通过**Function.prototype.bind**方法构造出来的函数是个例外，它没有prototype属性。
+6. 原型链是基于\__proto\__属性链接起来的，所有对象都继承于Object，所以原型链的最顶端是**Object.prototype**。
+7. instanceof 操作符的内部实现机制和隐式原型、显式原型有直接的关系。instanceof的左值一般是一个对象，右值一般是一个构造函数，用来判断左值是否是右值的实例，其原理就是沿着\__proto\__一直查找到原型链的顶端。
+
+**一个有趣的例子：**
+```javascript
+Function instanceof Object // true 
+Object instanceof Function // true 
+Function instanceof Function //true
+Object instanceof Object // true
+```
+
+----------
+Geeook created at 2017/8/12 12:30:49 
 ## null vs undefined
 大多数计算机语言，有且仅有一个表示"无"的值。有点奇怪的是，JavaScript语言居然有两个表示"无"的值：undefined和null。
 ### 相似性：
