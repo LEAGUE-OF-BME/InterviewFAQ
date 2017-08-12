@@ -10,6 +10,22 @@
 ## DNS解析的方法
 
 ## 跨域方法
+### 同源策略（协议、域、端口）
+| URL | 说明 | 是否允许通信 |
+|:----|:-----|:-----------:|
+| http://www.a.com/a.js</br>http://www.a.com/b.js</br> | 同一域名下 | 允许 |
+| http://www.a.com/lab/a.js</br>http://www.a.com/script/b.js</br> | 同一域名下不同文件夹 | 允许 |
+| http://www.a.com:8000/a.js</br>http://www.a.com/b.js</br> | 同一域名，不同端口 | 不允许 |
+| http://www.a.com/a.js</br>https://www.a.com/b.js</br> | 同一域名，不同协议 | 不允许 |
+| http://www.a.com/a.js</br>http://70.32.92.74/b.js</br> | 域名和域名对应ip | 不允许 |
+| http://www.a.com/a.js</br>http://script.a.com/b.js</br> | 主域相同，子域不同 | 不允许 |
+| http://www.a.com/a.js</br>http://a.com/b.js</br> | 同一域名，不同二级域名（同上） | 不允许 |
+| http://www.cnblogs.com/a.js</br>http://www.a.com/b.js</br> | 不同域名 | 不允许 |
+
+**注意：**
+1. 如果是协议和端口造成的跨域问题，“前台”是无能为力的。
+2. 通过“URL的首部”来识别是否同域，而不会去尝试判断相同的ip地址对应着两个域或两个域是否在同一个ip上
+### CORS
 
 ## 网络安全之XSS和CSRF
 
