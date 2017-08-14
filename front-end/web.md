@@ -196,7 +196,7 @@ Host: www.example.com/
 
 500：Internal Server Error 服务器执行请求时发生错误，可能是因为临时故障或者Web应用的bug。
 
-503 Service Unavailable 服务器暂时超负载或者停机维护，无法处理请求。
+503：Service Unavailable 服务器暂时超负载或者停机维护，无法处理请求。
 #### HTTP的缺点
 HTTP/1.1的缺点：虽然1.1版允许复用TCP连接，但是同一个TCP连接里面，所有的数据通信是按次序进行的。服务器只有处理完一个回应，才会进行下一个回应。要是前面的回应特别慢，后面就会有许多请求排队等着。这称为"队头堵塞"（Head-of-line blocking）。
 #### HTTP缓存机制
@@ -250,6 +250,7 @@ Pragma: no-cache
 ![](http://7tszky.com1.z0.glb.clouddn.com/FixnilG9OWm4w4qUNZGKSkYXZ4gu)
 
 常用值：
+
 | 指令 | 说明 |
 |:-----|:------|
 | public | 所有内容都将被缓存(客户端和代理服务器都可缓存) |
@@ -284,6 +285,7 @@ Expires是HTTP1.0的字段，为了兼容，现在的HTTP通信依旧会携带�
 如果客户端上某个资源的缓存过期了，但服务器并没有更新过这个资源，就需要验证客户端的缓存和服务器的资源是否相同。
 
 最先想到的就是文件修改时间。
+
 1. **Last-Modified、If-Modified-Since和If-Unmodified-Since**
 
 服务器将资源传递给客户端时，会将资源最后更改的时间以“Last-Modified: GMT”的形式加在实体首部上一起返回给客户端。
@@ -295,6 +297,7 @@ Last-Modified: Fri, 22 Jul 2016 01:47:00 GMT
 传递标记时间的请求头部字段有两个：**If-Modified-Since**和**If-Unmodified-Since**。
 
 如果服务器上某资源被修改了，但实际内容根本没发生改变，会因为Last-Modified时间匹配不上而返回了整个实体给客户端，所以需要直接比较文件内容。
+
 2. **ETag**
 
 服务器给资源计算出一个唯一标志符（默认是由文件的索引节（INode），大小（Size）和最后修改时间（MTime）进行Hash后得到的），在响应头部加上“ETag: 唯一标识符”一起返回给客户端。
@@ -310,9 +313,11 @@ ETag: "17fd8-5291a5f96fd20"
 1. **Expires / Cache-Control**
 
 考虑兼容，同时使用Expires和Cache-Control，会优先使用Cache-Control。
+
 2. **from-cache / 304**
 
 对于所有可缓存资源，指定Expires和Cache-Control max-age以及一个Last-Modified或ETag至关重要。同时使用前者和后者可以很好的相互适应。
+
 3. **静态资源**
 
 页面的静态资源以版本形式发布，常用的方法是在文件名或参数带上一串md5或时间标记符：
@@ -389,7 +394,7 @@ TCP/IP协议族分为四层：应用层、传输层、网络层和数据链路�
 HSTS的作用就是强制浏览器只能发出HTTPS请求，并阻止用户接受不安全的证书。它在网站的响应头里面，加入一个强制性声明：
 > Strict-Transport-Security: max-age=31536000; includeSubDomains
 > 
-> （1）在接下来的一年（即31536000秒）中，浏览器只要向example.com或其子域名发送HTTP请求时，必须采用HTTPS来发起连接。用户点击超链接或在地址栏输入http://www.example.com/，浏览器应当自动将http转写成https，然后直接向https://www.example.com/发送请求。
+> （1）在接下来的一年（即31536000秒）中，浏览器只要向example.com或其子域名发送HTTP请求时，必须采用HTTPS来发起连接。用户点击超链接或在地址栏输入http://www.example.com/ ，浏览器应当自动将http转写成https，然后直接向https://www.example.com/ 发送请求。
 > 
 > （2）在接下来的一年中，如果example.com服务器发送的证书无效，用户不能忽略浏览器警告，将无法继续访问该网站。
 
