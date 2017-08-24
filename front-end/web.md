@@ -330,7 +330,7 @@ http://img1.gtimg.com/ninja/2/2016/04/ninja145972803357449.jpg
 
 那么在文件没有变动的时候，浏览器不用发起请求直接可以使用缓存文件；而在文件有变化的时候，由于文件版本号的变更，导致文件名变化，请求的url变了，自然文件就更新了。这样能确保客户端能及时从服务器收取到新修改的文件。通过这样的处理，增长了静态资源，特别是图片资源的缓存时间，避免该资源很快过期，客户端频繁向服务端发起资源请求，服务器再返回304响应的情况（有Last-Modified/Etag）。
 ### HTTPS介绍
-TCP/IP协议族分为四层：应用层、传输层、网络层和数据链路层。其中HTTP协议处于应用层，TCP位于传输层和IP位于网络层。由于HTTP协议传输的数据是明文的，存在数据嗅探和篡改的安全问题。于是就有了**SSL**（Secure Sockets Layer）/**TLS**（Transport Layer Security）协议，用于对HTTP协议传输的数据进行加密，从而诞生了HTTPS。
+<a id="tls" name="tls"></a>TCP/IP协议族分为四层：应用层、传输层、网络层和数据链路层。其中HTTP协议处于应用层，TCP位于传输层和IP位于网络层。由于HTTP协议传输的数据是明文的，存在数据嗅探和篡改的安全问题。于是就有了**SSL**（Secure Sockets Layer）/**TLS**（Transport Layer Security）协议，用于对HTTP协议传输的数据进行加密，从而诞生了HTTPS。
 #### 原理
 先看一张图片：
 
@@ -599,3 +599,70 @@ cookie曾经用于客户端存储，虽然是合法的，但仅仅是因为别�
 
 ----------
 Geeook 于 2017/8/9 10:51:08 
+
+## 从输入URL到网页完全加载都经历了哪些过程
+这是一道古老而经典的面试题，转载自
+> [当···时发生了什么？](https://github.com/skyline75489/what-happens-when-zh_CN)
+
+摘选了其中重要易懂的部分，并查阅了相关资料做了一些补充。
+### 解析URL
+浏览器通过 URL 能够知道下面的信息：
+- Protocol："http"（使用HTTP协议）
+- Resource："/"（请求的资源是主页）
+
+当协议或主机名不合法时，浏览器会将地址栏中输入的文字传给默认的搜索引擎。
+
+浏览器检查输入是否含有不是 `a-z， A-Z，0-9， - `或者` . `的字符，如果有的话，浏览器会对主机名部分使用 Punycode 编码。
+### 检查 HSTS 列表
+浏览器检查自带的“预加载 HSTS（HTTP严格传输安全）”列表，这个列表里包含了那些请求浏览器只使用HTTPS进行连接的网站，如果网站在这个列表里，浏览器会使用 HTTPS 而不是 HTTP 协议，否则，最初的请求会使用HTTP协议发送。
+### DNS查询
+1. 浏览器检查域名是否在缓存当中。
+2. 如果没有找到或者缓存已经失效，则搜索操作系统的DNS缓存。
+3. 如果没有找到或者缓存已经失效，则检查域名是否在本地 hosts 里。
+4. 如果没有找到域名的缓存记录，也没有在 hosts 里找到，它将会向 DNS 服务器发送一条 DNS 查询请求。DNS 服务器是由网络通信栈提供的，通常是本地路由器或者 ISP 的缓存 DNS 服务器。
+5. 查询本地 DNS 服务器，如果 DNS 服务器没有找到结果，它会发送一个递归查询请求，一层一层向高层 DNS 服务器做查询，直到查询到起始授权机构，如果找到会把结果返回。
+6. 浏览器获得域名对应的IP地址之后发起TCP三次握手。
+### TCP三次握手
+
+![](/image/TCP.jpg)
+
+1. 客户端发送序列号seq = x，标志位是SYN（synchronous）。
+2. 服务端接收到序列号x之后，返回新的序列号seq = y，标志位是SYN，并将x + 1返回，标志位ACK（acknowledgement）。
+3. 客户端接收到服务端的ACK，知道服务端已经收到了x，同样也将y + 1再次发送给服务端，标志位ACK。
+### TLS握手
+如果是HTTPS协议，在TCP三次握手之后，还会有TLS五次握手。详情请见：<a href="#tls">TLS五次握手</a>。
+### HTTP请求处理
+连接建立之后，浏览器就可以向服务器发送HTTP请求（请求网页，发送GET请求）。
+
+HTTPD(HTTP Daemon)在服务器端处理请求。最常见的 HTTPD 有 Linux 上常用的 Apache 和 nginx，以及 Windows 上的 IIS。
+1. HTTPD 接收请求。
+2. 服务器把请求拆分为以下几个参数：
+    - HTTP 请求方法，直接在地址栏中输入 URL 这种情况下，使用的是 GET 方法
+    - 域名
+    - 请求路径/页面
+3. 服务器验证其上已经配置了该域名的虚拟主机。
+4. 服务器验证该域名接受 GET 方法。
+5. 服务器验证该用户可以使用 GET 方法(根据 IP 地址，身份信息等)。
+6. 如果服务器安装了 URL 重写模块（例如 Apache 的 mod_rewrite 和 IIS 的 URL Rewrite），服务器会尝试匹配重写规则，如果匹配上的话，服务器会按照规则重写这个请求。
+7. 服务器根据请求信息获取相应的响应内容，处理之后返回给浏览器。
+### 浏览器加载页面
+当服务器提供了资源之后（HTML，CSS，JS，图片等），浏览器会执行下面的操作：
+
+**解析** —— HTML，CSS，JS
+
+**渲染** —— 构建 DOM 树 -> 渲染 -> 布局 -> 绘制
+
+![](http://coolshell.cn//wp-content/uploads/2013/05/Render-Process.jpg)
+
+1. 浏览器解析：
+    - 一个是HTML/SVG/XHTML，事实上，Webkit有三个C++的类对应这三类文档。解析这三种文件会产生一个DOM Tree。
+    - CSS，解析CSS会产生CSS规则树。
+    - Javascript，主要是通过DOM API和CSSOM API来操作DOM Tree和CSS Rule Tree。
+2. 解析完成后，浏览器引擎会通过DOM Tree 和 CSS Rule Tree 来构造 Rendering Tree。注意：
+    - Rendering Tree 渲染树并不等同于DOM树，因为一些像Header或display:none的东西就没必要放在渲染树中了。
+    - CSS 的 Rule Tree主要是为了完成匹配并把CSS Rule附加上Rendering Tree上的每个Element。也就是DOM结点。也就是所谓的Frame。
+    - 然后，计算每个Frame（也就是每个Element）的位置，这又叫layout和reflow过程。
+3. 最后通过调用操作系统Native GUI的API绘制。
+
+----------
+Geeook @ 2017/8/24 22:28:00 
