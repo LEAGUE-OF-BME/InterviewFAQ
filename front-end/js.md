@@ -562,8 +562,138 @@ Number(undefined) // NaN
 
 ----------
 Geeook 于 2017/8/9 22:29:31 
-## js的严格模式
+## JavaScript的严格模式
 
 ## try catch无法捕捉异步操作的错误，如何处理？
 
 ## 提取url的查询字符串并输出对象形式
+```javascript
+function findQuery(url) {
+  if (typeof url !== "string") return
+  if (url.indexOf("?")) return {}
+  let queryObj = {};
+  url.substring(url.indexOf("?") + 1).split("&").forEach(function (item) {
+    let key = item.split("=")[0]
+    let val = item.split("=")[1]
+    queryObj[key] = val
+  });
+  return queryObj
+}
+```
+
+----------
+Geeook @ 2017/8/25 21:48:48 
+## setTimeout vs setInterval
+1. setTimeout延时函数；setInterval定时函数。
+2. 取消setTimeout用`clearTimeout`，取消setInterval用`clearInterval`。
+3. 由于setInterval定时函数可能会让回调函数轮空或者无间隔，所以可以用嵌套的setTimeout模拟setInterval，增加灵活性，并且可以保证最小间隔时间。
+```javascript
+function setMyInterval(func, wait, ...args) {
+  let inter = function () {
+    func.apply(null, args)
+    if (!inter.stop) {
+      setTimeout(inter, wait, ...args)
+    }
+  }
+  setTimeout(inter, wait)
+  return inter
+}
+
+function clearMyInterval(foo) {
+  foo.stop = true
+}
+```
+4. 延时为零的setTimeout函数可以用来安排一个回调函数在当前代码执行完之后立即执行。一些应用场景：
+    - 分割CPU计算量大的任务，防止页面假死。
+    - 让浏览器可以在间歇之中完成一些其他的操作，比如绘制进度条。
+5. setTimeout中的回调函数在被调用之前一直存在于内存中；setInterval中的回调函数常驻内存除非手动`clearInterval`。这样很容易造成内存泄漏。因为如果回调函数引用了外部的变量（数据量较大），那么这个变量不会被GC回收，占用的内存远远超过了回调函数自身。
+
+----------
+Geeook @ 2017/8/25 21:59:18 
+## 内存溢出
+### 简介
+内存溢出指的是：应用不需要的内存没有及时被回收。JavaScript有垃圾回收机制，通过周期性地检查之前分配的内存是否还能被应用访问来确定是否回收。
+### 内存溢出的情况
+1. 意外的全局变量
+```javascript
+// 函数内未用var声明的变量
+function foo(arg) {
+    bar = "this is an explicit global variable";
+}
+// 函数内用this创建的变量
+function foo() {
+    this.variable = "potential accidental global";
+}
+foo();
+```
+2. 被遗忘的定时函数和回调函数
+```javascript
+var someResource = getData();
+// 如果Node节点被移除，定时函数就是无效的，但是someResource（如果是大量数据）不会被回收。
+setInterval(function() {
+    var node = document.getElementById('Node');
+    if(node) {
+        // Do stuff with node and someResource.
+        node.innerHTML = JSON.stringify(someResource));
+    }
+}, 1000);
+```
+```javascript
+// 元素的监听事件在元素被移除之后，浏览器会自动回收事件的引用。但最好是手动移除监听事件。
+var element = document.getElementById('button');
+function onClick(event) {
+    element.innerHtml = 'text';
+}
+element.addEventListener('click', onClick);
+element.removeEventListener('click', onClick);
+element.parentNode.removeChild(element);
+// Now when element goes out of scope,
+// both element and onClick will be collected even in old browsers that don't handle cycles well.
+```
+3. 多余的DOM节点引用
+```javascript
+// 在JavaScript中手动创建的节点引用不会在节点被移除时被回收。
+// 在JavaScript中引用的某个节点的父节点被移除了，但父节点依旧在内存中。
+var elements = {
+    button: document.getElementById('button'),
+    image: document.getElementById('image'),
+    text: document.getElementById('text')
+};
+
+function doStuff() {
+    elements.image.src = 'http://some.url/image';
+    elements.button.click();
+    console.log(elements.text.innerHTML);
+}
+
+function removeButton() {
+    // The button is a direct child of body.
+    document.body.removeChild(document.getElementById('button'));
+    // At this point, we still have a reference to #button in the global
+    // elements dictionary. In other words, the button element is still in
+    // memory and cannot be collected by the GC.
+}
+```
+4. 闭包
+```javascript
+// 闭包引用的包裹函数中的变量常驻在内存中，使用不当容易造成内存溢出。
+// unused函数没有被使用过，但是由于它引用的变量originalThing导致unused函数不会被回收。
+var theThing = null;
+var replaceThing = function () {
+  var originalThing = theThing;
+  var unused = function () {
+    if (originalThing)
+      console.log("hi");
+  };
+  theThing = {
+    longStr: new Array(1000000).join('*'),
+    someMethod: function () {
+      console.log(someMessage);
+    }
+  };
+};
+setInterval(replaceThing, 1000);
+```
+
+----------
+Geeook @ 2017/8/25 19:05:13 
