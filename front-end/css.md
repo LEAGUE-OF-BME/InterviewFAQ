@@ -89,3 +89,9 @@ CSS命名方案（BEM原则）：
 ----------
 Geeook @ 2017/8/27 15:30:51 
 ## CSS3弹性布局
+
+## 元素居中
+### 水平居中
+inline 元素：`text-align: center`
+
+block 元素：`margin: 0 auto`

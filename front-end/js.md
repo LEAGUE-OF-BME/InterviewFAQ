@@ -824,3 +824,90 @@ function cloning(obj) {
 
 ----------
 Geeook @ 2017/8/27 14:49:08 
+## 经典JS笔试题#1
+```javascript
+function Foo() {
+  getName = function () {
+    alert(1)
+  }
+  return this
+}
+
+Foo.getName = function () {
+  alert(2)
+}
+Foo.prototype.getName = function () {
+  alert(3)
+}
+
+var getName = function () {
+  alert(4)
+}
+
+function getName() {
+  alert(5)
+}
+
+Foo.getName() // 2
+getName() // 4
+Foo().getName() // 1
+getName() // 1
+new Foo.getName() // 2
+new Foo().getName() // 3
+new new Foo().getName() // 3
+```
+此题设计知识点：变量定义提升，函数声明提升，this，作用域链，运算符优先级，原型和继承，全局变量污染，对象属性和原型属性。
+### 第二问
+考察变量定义提升和函数声明提升。
+```javascript
+function Foo() {
+  getName = function () {
+    alert(1)
+  }
+  return this
+}
+var getName // 只提升变量声明
+// 提升函数声明，覆盖getName的声明
+function getName() {
+  alert(5)
+}
+Foo.getName = function () {
+  alert(2)
+}
+Foo.prototype.getName = function () {
+  alert(3)
+}
+// 再次覆盖getName声明
+getName = function () {
+  alert(4)
+}
+getName() // 所以最终输出4
+```
+### 第三问
+考察this指向，作用域链，全局变量污染。
+
+Foo()执行之后，覆盖了window的全局变量getName；函数返回的this指向window。
+### 第五问
+考察运算符优先级。
+
+![](/image/priority.png)
+
+由图可知：成员访问`.`的优先级高于`new(无参数列表)`。所以：`new Foo.getName()` => `new ((Foo.getName)())`，实际上将`Foo`的`getName`函数作为构造函数执行。
+### 第六问
+考察构造函数的返回值、运算符优先级。
+
+由于`new(带参数列表)`的优先级和成员访问`.`相同，所以从左至右执行。`new Foo().getName()` => `((new Foo()).getName)()`，实际上调用的是`Foo.prototype`上的`getName`函数。
+### 第七问
+还是考察运算符的优先级。
+
+`new new Foo().getName()` => `new (new Foo()).getName()` => `new ((new Foo()).getName)()` => `new (((new Foo()).getName)())`
+
+实际上是用`new`运算符调用`Foo.prototype`的`getName`函数。
+### 补充：
+构造函数的返回值问题：
+- 无返回值，返回实例化对象。
+- 返回值是非引用类型，也返回实例化对象。
+- 返回值是引用类型，返回该值。
+
+----------
+Geeook @ 2017/8/27 23:12:11 
