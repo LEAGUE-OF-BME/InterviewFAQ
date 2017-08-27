@@ -697,3 +697,130 @@ setInterval(replaceThing, 1000);
 
 ----------
 Geeook @ 2017/8/25 19:05:13 
+## 如何实现Ajax请求
+原生的JavaScript代码完成Ajax请求：
+```javascript
+var xhr = new XMLHttpRequest() // 创建xhr实例
+xhr.onload = function (e) {
+  if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {} else {}
+}
+
+xhr.onprogress = function (e) {
+  if (e.lengthComputable) {
+    var status = e.position + " of " + e.totalSize;
+  }
+}
+
+xhr.onerror = function () {} // 请求错误监听事件
+xhr.open("get", url, false) // 请求方法、请求地址、是否异步
+xhr.timeout = 1000 // 超时时间   
+xhr.ontimeout = function () {} // 超时事件监听
+xhr.setRequestHeader(key, val) // 设置自定义头部
+xhr.send(data) // 发送数据：POST请求时发送；GET请求不传参
+xhr = null // 用完之后释放引用，不建议重用
+
+// 发送同步请求时监听响应的代码，放在send()之后
+if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {} else {}
+
+// 发送异步请求时监听响应的代码，放在open()之前
+xhr.onreadystatechange = function () {
+  if (xhr.readyState == 4) {
+    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {} else {}
+  }
+}
+```
+原生的xhr有6个事件：
+- loadstart：接收到响应的第一个字节时触发。
+- progress：接收响应期间持续触发。
+- error：请求错误触发。
+- abort：调用abort()方法终止连接时触发。
+- load：接收到完整响应数据时触发。
+- loadend：通信完成、触发error、abort或load事件后触发。
+
+----------
+Geeook @ 2017/8/27 12:57:45 
+## JavaScript的浅复制和深复制
+### 浅复制
+浅复制（***shallow copy***）通俗来讲就是值复制，把原始对象中所有属性的值都复制了一份，如果是基本数据类型，如果属性是对象的引用，那么仅仅是引用地址被复制，也就是说源对象和拷贝对象的该属性都指向同一个对象。
+#### 方法一
+`Object.assign(target, ...sources)`
+
+注意：
+1. 目标对象属性会被源对象同名属性覆盖，源对象从右往左，属性也会覆盖。
+2. 只复制可枚举的自身属性，会触发源对象的getter方法。
+3. String和Symbol类型的属性会被复制，属性值为null和undefined的不会被复制。
+4. 如果目标对象某属性是不可写的，源对象中具有同名属性，复制过程抛出TypeError异常，异常前的属性被复制。
+
+#### 方法二
+```javascript
+var newObj = Object.create(
+  Object.getPrototypeOf(obj), 
+  Object.getOwnPropertyDescriptors(obj)
+)
+```
+可以复制getter方法而不是触发。
+#### 方法三
+```javascript
+Object.defineProperties(
+  target,
+  Object.getOwnPropertyDescriptors(source)
+)
+```
+结果同方法二
+#### 方法四
+```javascript
+var newObj = jQuery.extend({}, oldObj)
+```
+### 深复制
+深复制（***deep copy***）是在浅复制的基础上，对于属性是对象引用的，复制时不仅仅是复制引用，而是创建一个等价的对象并引用。
+#### 方法一
+```javascript
+// JSON trick
+var newObj = JSON.parse(JSON.stringify(obj))
+```
+不能包含function，适用于属性是简单object、array、string、boolean和number类型。
+#### 方法二
+```javascript
+var newObj = jQuery.extend(true, {}, oldObj)
+```
+#### 方法三
+```javascript
+// 递归遍历属性并判断
+function cloning(obj) {
+  let copy
+  if (obj === null || typeof obj !== "object") {
+    return obj
+  }
+  if (obj instanceof Date) {
+    copy = new Date()
+    copy.setTime(obj.getTime())
+    return copy
+  }
+  if (obj instanceof Array) {
+    copy = []
+    for (let i = 0, len = obj.length; i < len; i++) {
+      copy[i] = cloning(obj[i])
+    }
+    return copy
+  }
+  if (obj instanceof RegExp) {
+    return new RegExp(obj)
+  }
+  // there is no need to copy function
+  // if (obj instanceof Function) {
+  //   return obj.bind(null)
+  //   eval('copy = ' + obj.toString());
+  //   return copy
+  // }
+  if (obj instanceof Object) {
+    copy = {}
+    for (let key in obj) {
+      copy[key] = cloning(obj[key])
+    }
+    return copy
+  }
+}
+```
+
+----------
+Geeook @ 2017/8/27 14:49:08 
