@@ -911,3 +911,191 @@ Foo()执行之后，覆盖了window的全局变量getName；函数返回的this�
 
 ----------
 Geeook @ 2017/8/27 23:12:11 
+## 函数
+### 函数表达式VS函数声明
+ECMA解释说函数表达式和函数声明的区别主要在于函数声明必须有一个Identifier（或者说是函数名字）而函数表示式可以没有。
+
+函数声明：`function Identifier(FormalParameterList opt) { FunctionBody }`
+
+函数表达式：`function Identifier opt(FormalParameterList opt) { FunctionBody }`
+
+没有名字时，一定是匿名函数表达式；如果有名字，就需要通过所处上下文来判断。如果是传参、赋值或者new运算符，就应该是函数表达式；如果是孤零零地在函数体内或者全局域中，就应该是函数声明。**e.g.**：
+```javascript
+function foo() {} // declaration, since it's part of a Program
+var bar = function foo() {}; // 表达式, 因为是赋值
+new function bar() {}; // expression, since it's part of a NewExpression
+(function () {
+  function bar() {} // declaration, since it's part of a FunctionBody
+})(); // 括号包含的是匿名函数表达式
+```
+**区别：**
+1. 函数声明提前。
+2. 通过条件语句控制函数声明的行为并未标准化，因此不同环境下可能会得到不同的结果，所以永远都不要依赖条件控制来声明函数，而应该使用函数表达式。**e.g.**
+```javascript
+// Never do this!
+// Some browsers will declare `foo` as the one returning 'first',
+// while others — returning 'second'
+if (true) {
+  function foo() {
+    return 'first'
+  }
+} else {
+  function foo() {
+    return 'second'
+  }
+}
+// Instead, use function expressions:
+var foo
+if (true) {
+  foo = function () {
+    return 'first'
+  }
+} else {
+  foo = function () {
+    return 'second'
+  }
+}
+foo()
+```
+### 函数特性、模式和高级用法
+#### 函数特性
+1. 函数是一等对象（***first-class***）。
+    - 可以在程序执行时动态创建函数。
+    - 可以将函数赋值给变量，可以将函数的引用拷贝给另一个变量，可以扩充和删除。
+    - 可以将函数作为参数传递，可以作为返回值返回。
+    - 可以添加属性和方法。
+2. 函数提供作用域支持，在JavaScript中没有块级作用域，只有函数作用域。
+> 我们首先当它是一个对象，具有可执行的特性。
+
+#### 常见模式
+**回调模式：**
+
+1. 最简单的回调：函数接受一个函数作为参数并在函数中调用传入的函数。此时，传入的函数就叫做回调函数。
+2. 回调和作用域：如果回调函数是匿名函数或者全局函数，在函数中就可以直接调用。如果回调函数是对象的方法并使用了对象的属性，此时就需要注意作用域的问题。除了传入回调函数，还需要传入回调函数所属的对象，并在函数中利用call()和apply()指定回调函数的作用域。
+3. 异步事件监听和延时：JavaScript中的事件监听和延时函数都用到了回调函数。
+4. 类库中的回调：在类库的设计时经常使用回调模式。设计时着重核心功能的实现，尽可能保持可复用和通用，但同时提供回调的入口作为“钩子（***hook***）”，定制需要的特性使类库变得可扩展和可定制。
+
+**函数的懒惰定义：**
+
+函数可以在运行中动态定义，用新函数覆盖掉旧函数。
+
+当函数中包含一些初始化操作并只需要执行一次时，或者函数里面的控制流每次都是一样时，这种模式非常合适，可以避免执行重复的代码，提高应用的执行效率。这种模式也被称为**函数的懒惰定义**。
+
+**缺陷**：原函数的功能丢失；如果这个函数被重定义为不同的名字，被赋值给不同的变量，或者是作为对象的方法使用，那么重定义的部分并不会生效，原来的函数依然会被执行。
+
+**记忆模式：**
+
+将函数执行结果保存为函数的自定义属性，避免函数下次调用时重复复杂的计算。**e.g.**
+```javascript
+var myFunc = function foo() {
+  var cachekey = JSON.stringify(Array.prototype.slice.call(arguments)),
+    result;
+  if (!foo.cache[cachekey]) {
+    result = {}
+    // 复杂计算
+    foo.cache[cachekey] = result
+  }
+  return foo.cache[cachekey]
+}
+
+// 缓存
+myFunc.cache = {}
+```
+
+**函数柯里化(Currying）：**
+
+让函数理解并处理部分应用的过程叫做柯里化。柯里化是一个变换函数的过程。可以将函数需要的参数分多次传入。
+
+通用的柯里化函数：
+```javascript
+function curry(func) {
+  let slice = Array.prototype.slice
+  let oldArgs = slice.call(arguments, 1)
+  return function () {
+    return func.apply(null, oldArgs.concat(slice.call(arguments)))
+  }
+}
+// 普通函数
+function add(a, b, c, d, e) {
+  return a + b + c + d + e
+}
+// 参数个数可以随意分割
+curry(add, 1, 2, 3)(5, 5) // 16
+// 两步柯里化
+var addOne = curry(add, 1)
+addOne(10, 10, 10, 10) // 41
+var addSix = curry(addOne, 2, 3)
+addSix(5, 5) // 16
+```
+**使用场景：**
+
+当你发现自己在调用同样的函数并且传入的参数大部分都相同的时候，就是考虑柯里化的理想场景了。你可以通过传入一部分的参数动态地创建一个新的函数。这个新函数会存储那些重复的参数（所以你不需要再每次都传入），然后再在调用原始函数的时候将整个参数列表补全。
+### NFE
+具有Identifier（或者说函数名字）的函数表达式被称作具名函数表达式（***Named Function Expression***）。
+
+`var bar = function foo() {}` 只能在函数内部访问具名函数表达式的名字foo。
+
+具名函数表达式的作用主要是追踪栈中有函数名，利于调试。其次可以在递归时使用（代替`arguments.callee`）。
+### IIFE
+立即执行函数表达式（***Immediately Invoked Function Expression***）的形式如下：
+```javascript
+(function(){
+    //...
+})()
+```
+立即执行函数表达式是指程序运行到此时函数立即执行。用法：
+1. 传递参数为window，可以更快地访问全局作用域里面的变量，不需要沿着作用域链进行查找。
+2. 传递参数为函数。
+3. 利用函数作用域创建块级作用域，防止全局变量污染。
+4. 模块化编程、测试和部署。
+### Closure
+闭包（closure）是Javascript语言的一个难点，也是它的特色。
+#### 闭包的特性
+- 函数嵌套
+- 函数内部可以引用外部的参数和变量
+- 参数和引用变量不会被垃圾回收机制回收
+#### 闭包的定义和优缺点
+定义1：有权访问另一个函数作用域中的变量的函数。
+
+定义2：当一个内部函数被其外部函数之外的变量引用时，就形成了一个闭包。
+
+创建闭包的最常见的方式就是在函数内创建函数。
+#### 闭包的用法
+1. 通常和 IIFE 一起使用，模块化代码，避免全局变量的污染。
+```javascript
+let foo = (function () {
+  let a = 1
+  return function () {
+    a++
+    console.log(a)
+  }
+})()
+foo() // 2
+foo() // 3
+```
+2. 创建私有成员
+```javascript
+let foo = (function () {
+  let a = 1
+
+  function b() {
+    a++
+    console.log(a)
+  }
+
+  function c() {
+    a++
+    console.log(a)
+  }
+  return {
+    b: b,
+    c: c
+  }
+})()
+// 此时a是私有成员，只能通过函数方法 b() 和 c() 访问
+foo.b() // 2
+foo.c() // 3
+```
+
+----------
+Geeook @ 2017/8/28 16:45:15 

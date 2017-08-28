@@ -706,3 +706,29 @@ Lazy load
 缓存
 HTTP2.0
 ## 移动端适配
+
+## Backbone.js
+***Backbone.js***：前端框架（MVC）。
+
+**Model：**
+- 组织数据和业务逻辑
+- 和数据库交互
+- 数据变化时触发事件
+
+Model可复用，可以在app中传递。
+
+**View：**
+- 监听数据变化和重新渲染页面
+- 处理用户的输入和交互
+- 发送捕捉的输入到Model
+
+View是一块独立的UI，从一个或多个models中渲染数据，也可以不需要数据。Models应该不感应views的变化，相反，views监听model的变化，重新渲染页面或者作出适当的反应。
+
+**Collection：**
+
+Collection帮助处理一组相关的models，加载和保存新的models到服务器，提供models集成和计算的方法。除了models自己的事件之外，collections可以集中代理models的所有事件。如图所示：
+
+![](/image/collection.png)
+
+----------
+Geeook @ 2017/8/28 18:05:58 

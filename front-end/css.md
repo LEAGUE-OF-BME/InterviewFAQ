@@ -89,9 +89,153 @@ CSS命名方案（BEM原则）：
 ----------
 Geeook @ 2017/8/27 15:30:51 
 ## CSS3弹性布局
-
+## BFC
 ## 元素居中
 ### 水平居中
 inline 元素：`text-align: center`
 
 block 元素：`margin: 0 auto`
+
+多个block元素并排：
+```html
+<main class="inline-block-center">
+  <div>
+    I'm an element that is block-like with my siblings and we're centered in a row.
+  </div>
+  <div>
+    I'm an element that is block-like with my siblings and we're centered in a row.
+  </div>
+  <div>
+    I'm an element that is block-like with my siblings and we're centered in a row.
+  </div>
+</main>
+```
+```css
+.inline-block-center {
+  text-align: center;
+}
+.inline-block-center div {
+  display: inline-block;
+}
+```
+[测试效果](https://jsfiddle.net/w8kte3k9/)
+
+用flexbox：
+```css
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+```
+[测试效果](https://jsfiddle.net/w8kte3k9/2/)
+### 垂直居中
+#### inline 元素
+- 一行元素：`padding-top` = `padding-bottom` or `line-height` = `height`
+- 多行元素：
+```html
+<div class="center-table">
+    <p>I'm vertically centered multiple lines of text in a CSS-created table layout.</p>
+</div>
+```
+```css
+/* 伪装成table的cell，设置vertical-align */
+.center-table {
+  display: table;
+}
+.center-table p {
+  display: table-cell;
+  vertical-align: middle;
+}
+```
+[测试效果](https://jsfiddle.net/w8kte3k9/3/)
+
+用flexbox：
+```css
+.flex-center-vertically {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+```
+[测试效果](https://jsfiddle.net/w8kte3k9/4/)
+#### block 元素
+知道需要居中元素的height：
+```css
+.parent {
+  position: relative;
+}
+.child {
+  position: absolute;
+  top: 50%;
+  height: 50px;
+  margin-top: -25px; /* height/2, account for padding and border if not using box-sizing: border-box */
+}
+```
+[测试效果](https://jsfiddle.net/1vc637z4/1/)
+
+不知道需要居中元素的height：
+```css
+.parent {
+  position: relative;
+}
+.child {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+```
+[测试效果](https://jsfiddle.net/1vc637z4/2/)
+
+用flexbox：
+```css
+.parent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+```
+[测试效果](https://jsfiddle.net/1vc637z4/4/)
+### 水平和垂直居中
+固定宽度和高度的元素：
+```css
+.parent {
+  position: relative;
+}
+.child {
+  width: 80px;
+  height: 40px;
+  padding: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -30px 0 0 -50px; /* 原理和之前的相似，一半的宽/高 + padding */
+}
+```
+[测试效果](https://jsfiddle.net/1vc637z4/6/)
+
+未知宽度和高度：
+```css
+.parent {
+  position: relative;
+}
+.child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+[测试效果](https://jsfiddle.net/1vc637z4/8/)
+
+用flexbox：
+```css
+.parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+```
+[测试效果](https://jsfiddle.net/1vc637z4/10/)
+
+----------
+Geeook @ 2017/8/28 15:04:36 
