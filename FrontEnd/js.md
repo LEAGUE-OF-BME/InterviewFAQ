@@ -1062,7 +1062,7 @@ ECMA解释说函数表达式和函数声明的区别主要在于函数声明必�
 
 函数表达式：`function Identifier opt(FormalParameterList opt) { FunctionBody }`
 
-没有名字时，一定是匿名函数表达式；如果有名字，就需要通过所处上下文来判断。如果是传参、赋值或者new运算符，就应该是函数表达式；如果是孤零零地在函数体内或者全局域中，就应该是函数声明。**e.g.**：
+没有名字时，一定是匿名函数表达式；如果有名字，就需要通过所处上下文来判断。如果是传参、赋值或者new运算符，就应该是函数表达式；如果是孤零零地在函数体内或者全局域中，就应该是函数声明。**e.g.**
 ```javascript
 function foo() {} // declaration, since it's part of a Program
 var bar = function foo() {}; // 表达式, 因为是赋值
