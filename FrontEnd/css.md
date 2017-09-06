@@ -22,7 +22,7 @@ box-sizing: border-box;
 这样可以多浏览器兼容，保持一致。
 
 ----------
-Geeook 于 2017/8/9 21:45:13 
+ 
 ## 元素消失的四种CSS方法
 ```css
 visibility: hidden;
@@ -35,7 +35,7 @@ display: none;
 ~~z-index: -100;~~
 
 ----------
-Geeook created at 2017/8/9 23:06:32 
+ 
 ## 伪类和伪元素
 
 ## 长文本如何用CSS实现省略号
@@ -87,7 +87,7 @@ CSS命名方案（BEM原则）：
 复用块不仅要实现相同的CSS，还要复用行为。
 
 ----------
-Geeook @ 2017/8/27 15:30:51 
+ 
 ## CSS3弹性布局
 ## BFC
 ## 元素居中
@@ -238,4 +238,3 @@ block 元素：`margin: 0 auto`
 [测试效果](https://jsfiddle.net/1vc637z4/10/)
 
 ----------
-Geeook @ 2017/8/28 15:04:36 
