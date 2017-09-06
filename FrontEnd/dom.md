@@ -27,7 +27,7 @@ getElementsByTagName()
 getElementsByTagNameNS(): returns a list of elements with the given tag name belonging to the given namespace.
 
 ----------
-Geeook created at 2017/8/9 23:02:06 
+
 ## DOM reflow
 HTML使用的是flow based layout，也就是流式布局。所以如果某元素的几何尺寸发生了变化，需要重新布局，也就叫reflow。
 元素发生reflow会重新计算尺寸和位置，并且会触发子元素和父元素的reflow事件。reflow事件成本非常高，但却很容易被触发。
@@ -61,7 +61,7 @@ HTML使用的是flow based layout，也就是流式布局。所以如果某元�
 6. 尽量不使用table布局，因为可能很小的一个小改动会造成整个table的reflow。
 
 ----------
-Geeook @ 2017/8/25 16:49:11 
+
 ## 低版本浏览器如何兼容HTML5标签
 HTML5的语义化标签以及属性，可以让开发者非常方便地实现清晰的web页面布局，加上CSS3的效果渲染，快速建立丰富灵活的web页面显得非常简单。
 - `<header>`定义页面或区段的头部；
@@ -99,7 +99,7 @@ article, aside, dialog, footer, header, section, nav, figure, menu { display: bl
 ```
 
 ----------
-Geeook @ 2017/8/25 20:29:39 
+
 ## 对HTML5标签语义化的理解
 
 ## 点击相关事件触发顺序
@@ -132,7 +132,7 @@ a.onfocus = function() {
 事件触发顺序是：`down focus up click`。
 
 ----------
-Geeook @ 2017/8/26 13:54:06 
+
 
 ## 鼠标移动事件
 `mouseenter` vs `mouseover`
@@ -150,4 +150,3 @@ mouseleave不会冒泡，mouseout会冒泡。
 **mouseout**：主目标是失去焦点的元素，相关目标是获得焦点的元素（<=IE8: `toElement`）。
 
 ----------
-Geeook @ 2017/8/26 13:53:38 
