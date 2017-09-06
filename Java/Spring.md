@@ -1,17 +1,6 @@
-# Spring事务分析 #
+## 1、Spring事务分析 
 
-
-## 事务隔离级别 ##
-
-|级别|说明|
-|----|---|
-|ISOLATION_DEFAULE|使用数据库的默认隔离级别
-|ISOLATION_READ_UNCOMMIT||
-|ISOLATION_READ_COMMIT|
-|ISOLATION_REPEATABLE_READ|
-|ISOLATION_SERIALIZABLE|
-
-## 事务的传播行为 ##
+### 1.1 事务的传播行为 ##
 |常量|说明|
 |---|---|
 |PROPAGATION_REQUIRED|支持当前事务，如果没有事务就新建一个事务，这是最常见的选择|
@@ -22,7 +11,7 @@
 |PROPAGATION_NEVER|以非事务的方式执行，如果当前存在事务，则抛出异常|
 |PROPAGATION_NESTED|如果当前存在事务，则在嵌套事务内执行，如果没有当前事务，则进行与PROPAGATION_REQUIRED类似的操作|
 
-## 编程式事务 ##
+### 1.2 编程式事务 ##
 事务管理的代码内嵌在普通的逻辑代码中，需要使用PlatformTransactionManager， TransactionDefinition和TransactionStatus三个核心接口，代码如下：
 ```java
 public class BankServiceImpl implements BankService {
@@ -46,7 +35,7 @@ public class BankServiceImpl implements BankService {
 }
 ```
 
-## 声明式事务 ##
+### 1.3 声明式事务
 Spring的声明式事务管理在底层是建立在AOP之上的。其本质是对方法前后进行拦截，然后在目标方法开始之前创建或者加入一个事务，在执行完目标方法之后根据执行情况提交或者回滚事务
 目前最常用的是基于注解的配置方式，代码如下
 ```java
