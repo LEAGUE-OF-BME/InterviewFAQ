@@ -145,9 +145,9 @@ mouseleave不会冒泡，mouseout会冒泡。
 
 对于mouseover和mouseout事件，有一个相关目标的属性（`relatedTarget`）。通过判断相关目标可以防止事件冒泡。
 
-**mouseover：**主目标是获得焦点的元素，相关目标是失去焦点的元素（<=IE8: `fromElement`）。
+**mouseover**：主目标是获得焦点的元素，相关目标是失去焦点的元素（<=IE8: `fromElement`）。
 
-**mouseout：**主目标是失去焦点的元素，相关目标是获得焦点的元素（<=IE8: `toElement`）。
+**mouseout**：主目标是失去焦点的元素，相关目标是获得焦点的元素（<=IE8: `toElement`）。
 
 ----------
 Geeook @ 2017/8/26 13:53:38 

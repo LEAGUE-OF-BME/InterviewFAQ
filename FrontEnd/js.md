@@ -564,25 +564,168 @@ Number(undefined) // NaN
 Geeook 于 2017/8/9 22:29:31 
 ## JavaScript的严格模式
 
-## try catch无法捕捉异步操作的错误，如何处理？
-
-## 提取url的查询字符串并输出对象形式
+## 🤜 异常处理
+### 👉 `try...catch`语句
+`try...catch`是JavaScript中处理异常的一种标准方式。
 ```javascript
-function findQuery(url) {
-  if (typeof url !== "string") return
-  if (url.indexOf("?")) return {}
-  let queryObj = {};
-  url.substring(url.indexOf("?") + 1).split("&").forEach(function (item) {
-    let key = item.split("=")[0]
-    let val = item.split("=")[1]
-    queryObj[key] = val
-  });
-  return queryObj
+try {
+  ...
+} catch (error) { // error 是必需的，即使你不想使用
+  alert(error.message) // 对象中包含的属性因浏览器而异，但是都有message和name属性(保存错误类型)
+} finally {
+  ... // finally 子句是可选的，但是一经使用，其中的代码必须执行。
+  ... // 甚至return语句都不会阻止，此时try和catch中的return将被忽略。
 }
 ```
+#### 错误类型
+- Error：基类型
+- EvalError：没有把`eval()`当成函数调用
+- RangeError：数值超出相应范围
+- ReferenceError：找不到对象
+- SyntaxError：`eval()`中传入语法错误的执行语句
+- TypeError：在变量中保存着意外的类型时，或者访问不存在的方法时，归根结底是在执行特定于类型的操作时，变量类型不符合要求
+- URIError：在使用`encodeURI()`和`decodeURI()`时，URI格式不正确
+#### 合理使用`try...catch`
+1. `try...catch`可以实现自定义的错误类型。
+2. `try...catch`最适合处理我们无法控制的错误。比如使用一个大型的JavaScript库时程序可能会抛出错误，而我们又不能轻易修改源码，可以使用`try...catch`。
+3. 在明白自己的代码会发生错误时，要思考如何规避和处理错误和不是使用`try...catch`捕获错误。
+#### `throw` vs `try...catch`
+一句话总结：只捕获那些确切知道如何处理的错误，不能处理就抛出，抛出错误时要提供错误发生的具体原因。
+### 👉 错误（error）事件
+```javascript
+// 只能使用DOM0级
+window.onerror = function (message, url, line) {
+  ...
+}
+```
+任何没有通过`try...catch`处理的错误都会触发window的error事件，甚至浏览器插件的js异常。
+### 👉 异步编程中的异常处理
+因为异步函数的回调是在事件队列里单独拉出来执行的。所以在异步函数外面包裹`try...catch`是无法捕捉到回调函数里抛出的异常的。因为当回调函数从队列里被拉出来执行的时候`try...catch`所在的代码块已经执行完毕了。在浏览器里可以通过`window.onerror`，在node里通过`process.uncaughtException`可以捕获此类异常。
+```javascript
+process.on('uncaughtException', function(err) {
+    console.error('Error caught in uncaughtException event:', err)
+})
+```
+除此之外，还有一些方法。
+#### callback
+通过回调函数可以比较方便地进行异常处理，例如：
+```javascript
+function async(callback, errback) {
+  setTimeout(function () {
+    var rand = Math.random()
+    if (rand < 0.5) {
+      errback('async error')
+    } else {
+      callback(rand)
+    }
+  }, 1000)
+}
+
+async(function (result) {
+  console.log('scucess:', result)
+}, function (err) {
+  console.log('fail:', err)
+})
+```
+有时候为了方便，也会将callback和errback合并为一个回调函数，这也是Node风格回调处理。
+```javascript
+function async(callback) {
+  setTimeout(function () {
+    var rand = Math.random()
+    if (rand < 0.5) {
+      callback('async error')
+    } else {
+      callback(null, rand)
+    }
+  }, 1000)
+}
+
+async(function (err, result) {
+  if (err) {
+    console.log('fail:', err)
+  } else {
+    console.log('success:', result)
+  }
+})
+```
+不过在多异步串行的情况下，使用回调函数的方式，会出现callback hell，代码可读性变差。这就需要用到第二种方法。
+#### promise
+```javascript
+function async() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      var rand = Math.random()
+      if (rand < 0.5) {
+        reject('async error')
+      } else {
+        resolve(rand)
+      }
+    }, 1000)
+  })
+}
+
+async().then(function (result) {
+  console.log('success:', result)
+}, function (err) {
+  console.log('fail:', err)
+})
+```
+或者使用catch的方式：
+```javascript
+function async() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      var rand = Math.random()
+      if (rand < 0.5) {
+        reject('async error')
+      } else {
+        resolve(rand)
+      }
+    }, 1000)
+  })
+}
+
+async().then(function (result) {
+    console.log('success:', result)
+  })
+  .catch(function (err) {
+    console.log('fail:', err)
+  })
+```
+对于多异步操作串行的问题，使用promise的方式会使得代码简洁优雅，可读性也很强。代码如下：
+```javascript
+function async() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      var rand = Math.random()
+      if (rand < 0.7) {
+        reject('async error')
+      } else {
+        resolve(rand)
+      }
+    }, 1000)
+  })
+}
+
+function onResolved(result) {
+  console.log('success:', result)
+}
+
+function onRejected(err) {
+  console.log('fail:', err)
+}
+
+async().then(onResolved)
+  .then(async)
+  .then(onResolved)
+  .then(async)
+  .then(onResolved)
+  .catch(onRejected) // 前面任一次回调发生异常都可以捕获到。
+```
+> 大部分转载自：[异步编程中的异常处理](http://syaning.com/2015/08/10/asynchronous-error-handling/)
 
 ----------
-Geeook @ 2017/8/25 21:48:48 
+Geeook @ 2017/9/1 1:43:02 
 ## setTimeout vs setInterval
 1. setTimeout延时函数；setInterval定时函数。
 2. 取消setTimeout用`clearTimeout`，取消setInterval用`clearInterval`。
@@ -919,7 +1062,7 @@ ECMA解释说函数表达式和函数声明的区别主要在于函数声明必�
 
 函数表达式：`function Identifier opt(FormalParameterList opt) { FunctionBody }`
 
-没有名字时，一定是匿名函数表达式；如果有名字，就需要通过所处上下文来判断。如果是传参、赋值或者new运算符，就应该是函数表达式；如果是孤零零地在函数体内或者全局域中，就应该是函数声明。**e.g.**：
+没有名字时，一定是匿名函数表达式；如果有名字，就需要通过所处上下文来判断。如果是传参、赋值或者new运算符，就应该是函数表达式；如果是孤零零地在函数体内或者全局域中，就应该是函数声明。**e.g.**
 ```javascript
 function foo() {} // declaration, since it's part of a Program
 var bar = function foo() {}; // 表达式, 因为是赋值
@@ -1098,4 +1241,149 @@ foo.c() // 3
 ```
 
 ----------
-Geeook @ 2017/8/28 16:45:15 
+Geeook @ 2017/8/28 16:45:15
+## 对象属性遍历
+| 方法 | 所有属性 | 可枚举属性 | 包括原型属性 | 自身属性 |
+|------|:----------:|:-----------:|:--------------:|:----------:|
+| `Object.keys(obj)`|  | ✔️ |  | ✔️ |
+| `for...in` |  | ✔️ | ✔️ |  |
+| `Object.getOwnPropertyNames()` | ✔️ |  |  | ✔️ |
+
+三种方式遍历的顺序是一致的。
+
+----------
+Geeook @ 2017/8/29 13:43:53 
+## 自己手写的常用小函数
+```javascript
+function isEmpty(obj) {
+  return (Object.prototype.toString.call(obj) == "[object Object]") && (Object.getOwnPropertyNames(obj).length == 0)
+}
+```
+```javascript
+function getUrlParam(sUrl, sKey) {
+  var result = {}
+  sUrl.replace(/\??(\w+)=(\w+)&?/g, function (a, k, v) {
+    if (result[k] !== undefined) {
+      var t = result[k]
+      result[k] = [].concat(t, v)
+    } else {
+      result[k] = v
+    }
+  })
+  if (sKey === undefined) return result
+  else return result[sKey] || ''
+}
+```
+```javascript
+function formatDate(date, format) {
+  var obj = {
+    yyyy: date.getFullYear(),
+    yy: ("" + date.getFullYear()).slice(-2),
+    M: date.getMonth() + 1,
+    MM: ("0" + (date.getMonth() + 1)).slice(-2),
+    d: date.getDate(),
+    dd: ("0" + date.getDate()).slice(-2),
+    H: date.getHours(),
+    HH: ("0" + date.getHours()).slice(-2),
+    h: date.getHours() % 12,
+    hh: ("0" + date.getHours() % 12).slice(-2),
+    m: date.getMinutes(),
+    mm: ("0" + date.getMinutes()).slice(-2),
+    s: date.getSeconds(),
+    ss: ("0" + date.getSeconds()).slice(-2),
+    w: ['日', '一', '二', '三', '四', '五', '六'][date.getDay()]
+  }
+  return format.replace(/[a-z]+/ig, function (str) {
+    return obj[str]
+  })
+}
+```
+```javascript
+// 五种方法实现循环添加延时事件（回调函数引用遍历索引）
+for (var i = 1; i <= 5; i++) {
+  (function (i) {
+    setTimeout(function timer() {
+      console.log(i);
+    }, i * 1000);
+  })(i)
+}
+
+for (var i = 1; i <= 5; i++) {
+  setTimeout((function (i) {
+    return function () {
+      console.log(i);
+    }
+  })(i), i * 1000);
+}
+
+for (var i = 1; i <= 5; i++) { 
+  setTimeout(function timer(i) {
+    console.log(i);
+  }, i * 1000, i);
+}
+
+for (var i = 1; i <= 5; i++) { 
+  setTimeout(function timer(i) {
+    console.log(i);
+  }.bind(null, i), i * 1000);
+}
+
+for (let i = 1; i <= 5; i++) { 
+  setTimeout(function timer() {
+    console.log(i);
+  }, i * 1000);
+}
+```
+```javascript
+function isAvailableEmail(sEmail) {
+    return /^\w+(\.\w+)*@\w+(\.\w+)+$/g.test(sEmail)
+}
+```
+```javascript
+function rgb2hex(sRGB) {
+  var arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "a", "b", "c", "d", "e", "f"]
+  var rgb = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/gi
+  var res = rgb.exec(sRGB)
+  if (!res) return sRGB
+  if (res.slice(1).some(function (item) {
+      return item > 255 || item < 0
+    })) return sRGB
+  return res.slice(1).reduce(function (hex, item) {
+    var fir = Math.floor(item / 16)
+    var sec = item - fir * 16
+    return hex + arr[fir] + arr[sec]
+  }, "#")
+}
+```
+```javascript
+function cssStyle2DomStyle(sName) {
+  var arr = sName.match(/\w+/g)
+  return arr.slice(1).reduce(function (res, item) {
+    return res + item.substring(0, 1).toUpperCase() + item.substring(1)
+  }, arr[0])
+}
+// better solution
+function cssStyle2DomStyle(sName) {
+  return sName.replace(/\-[a-z]/g, function (a, b) {    
+    return b == 0 ? a.replace('-', '') : a.replace('-', '').toUpperCase(); 
+  });
+}
+```
+```javascript
+function count(str) {
+  var res = {}
+  str.split("").forEach(function (item) {
+    if (item !== " ") (!res[item]) ? res[item] = 1 : res[item]++
+  })
+  return res
+}
+// better solution
+function count(str) {
+  var obj = {}
+  str.replace(/\S/g, function (s) { !obj[s] ? obj[s] = 1 : obj[s]++ })
+  return obj
+}
+```
+
+----------
+Geeook @ 2017/9/1 1:48:47 
