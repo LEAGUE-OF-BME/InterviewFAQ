@@ -260,7 +260,7 @@ m instanceof Person // true
 > 你在阅读此文档时，可能ES8甚至9已经推出，ES6的这种写法应该很常见了，前面几种古董方法估计都没人用了。
 
 ----------
-Geeook 于 2017/8/8 21:56:06 
+
 ## 继承
 ### 原型链
 ```javascript
@@ -486,7 +486,7 @@ m2.sayAge()
 开发人员普遍认为这是引用类型最理想的继承范式。
 
 ----------
-Geeook created at 2017/8/10 14:02:11 
+
 ## \__proto\__和prototype的区别
 ![](/image/原型链图解1.png)
 ![](/image/原型链图解.png)
@@ -509,7 +509,7 @@ Object instanceof Object // true
 ```
 
 ----------
-Geeook created at 2017/8/12 12:30:49 
+
 ## null vs undefined
 大多数计算机语言，有且仅有一个表示"无"的值。有点奇怪的是，JavaScript语言居然有两个表示"无"的值：undefined和null。
 ### 相似性：
@@ -561,7 +561,7 @@ Number(undefined) // NaN
 > 转载自：[阮一峰的网络日志：undefined与null的区别](http://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html)
 
 ----------
-Geeook 于 2017/8/9 22:29:31 
+
 ## JavaScript的严格模式
 
 ## 🤜 异常处理
@@ -725,7 +725,7 @@ async().then(onResolved)
 > 大部分转载自：[异步编程中的异常处理](http://syaning.com/2015/08/10/asynchronous-error-handling/)
 
 ----------
-Geeook @ 2017/9/1 1:43:02 
+
 ## setTimeout vs setInterval
 1. setTimeout延时函数；setInterval定时函数。
 2. 取消setTimeout用`clearTimeout`，取消setInterval用`clearInterval`。
@@ -752,7 +752,7 @@ function clearMyInterval(foo) {
 5. setTimeout中的回调函数在被调用之前一直存在于内存中；setInterval中的回调函数常驻内存除非手动`clearInterval`。这样很容易造成内存泄漏。因为如果回调函数引用了外部的变量（数据量较大），那么这个变量不会被GC回收，占用的内存远远超过了回调函数自身。
 
 ----------
-Geeook @ 2017/8/25 21:59:18 
+
 ## 内存溢出
 ### 简介
 内存溢出指的是：应用不需要的内存没有及时被回收。JavaScript有垃圾回收机制，通过周期性地检查之前分配的内存是否还能被应用访问来确定是否回收。
@@ -839,7 +839,7 @@ setInterval(replaceThing, 1000);
 ```
 
 ----------
-Geeook @ 2017/8/25 19:05:13 
+
 ## 如何实现Ajax请求
 原生的JavaScript代码完成Ajax请求：
 ```javascript
@@ -881,7 +881,7 @@ xhr.onreadystatechange = function () {
 - loadend：通信完成、触发error、abort或load事件后触发。
 
 ----------
-Geeook @ 2017/8/27 12:57:45 
+
 ## JavaScript的浅复制和深复制
 ### 浅复制
 浅复制（***shallow copy***）通俗来讲就是值复制，把原始对象中所有属性的值都复制了一份，如果是基本数据类型，如果属性是对象的引用，那么仅仅是引用地址被复制，也就是说源对象和拷贝对象的该属性都指向同一个对象。
@@ -966,7 +966,7 @@ function cloning(obj) {
 ```
 
 ----------
-Geeook @ 2017/8/27 14:49:08 
+
 ## 经典JS笔试题#1
 ```javascript
 function Foo() {
@@ -1053,7 +1053,7 @@ Foo()执行之后，覆盖了window的全局变量getName；函数返回的this�
 - 返回值是引用类型，返回该值。
 
 ----------
-Geeook @ 2017/8/27 23:12:11 
+
 ## 函数
 ### 函数表达式VS函数声明
 ECMA解释说函数表达式和函数声明的区别主要在于函数声明必须有一个Identifier（或者说是函数名字）而函数表示式可以没有。
@@ -1241,7 +1241,7 @@ foo.c() // 3
 ```
 
 ----------
-Geeook @ 2017/8/28 16:45:15
+
 ## 对象属性遍历
 | 方法 | 所有属性 | 可枚举属性 | 包括原型属性 | 自身属性 |
 |------|:----------:|:-----------:|:--------------:|:----------:|
@@ -1252,7 +1252,7 @@ Geeook @ 2017/8/28 16:45:15
 三种方式遍历的顺序是一致的。
 
 ----------
-Geeook @ 2017/8/29 13:43:53 
+
 ## 自己手写的常用小函数
 ```javascript
 function isEmpty(obj) {
@@ -1386,4 +1386,3 @@ function count(str) {
 ```
 
 ----------
-Geeook @ 2017/9/1 1:48:47 

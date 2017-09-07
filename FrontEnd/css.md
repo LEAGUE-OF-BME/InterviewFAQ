@@ -89,7 +89,73 @@ CSS命名方案（BEM原则）：
 ----------
  
 ## CSS3弹性布局
-## BFC
+## 🤜 BFC
+### 👉 从margin合并开始说起
+MDN官网上描述margin合并：
+> 块的顶部外边距和底部外边距有时被组合(折叠)为单个外边距，其大小是组合到其中的最大外边距，这种行为称为外边距塌陷(margin collapsing)，有的地方翻译为外边距合并。
+
+发生外边距合并的三种情况：
+1. 相邻的兄弟姐妹元素
+
+毗邻的两个兄弟元素之间的外边距会塌陷（除非后者兄弟姐妹需要清除过去的浮动）。例如：
+```html
+<p style="margin-bottom: 30px;">这个段落的下外边距被合并...</p>
+<p style="margin-top: 20px;">...这个段落的上外边距被合并。</p>
+```
+可以发现这两个段落中间的距离，不是 ”上面段落的下边距“ 与 ”下面段落的上边距“ 的 求和 ，而是两者中的较大者（在此示例中为30px）。
+2. 块级父元素与其第一个/最后一个子元素
+
+如果块级父元素中，不存在上边框、上内边距、内联元素、 清除浮动 这四条属性（也可以说，当上边框宽度及上内边距距离为0时），那么这个块级元素和其第一个子元素的上边距就可以说”挨到了一起“。此时这个块级父元素和其第一个子元素就会发生上外边距合并现象，换句话说，此时这个父元素对外展现出来的外边距将直接变成这个父元素和其第一个子元素的margin-top的较大者。
+类似的，若块级父元素的 margin-bottom 与它的最后一个子元素的margin-bottom 之间没有父元素的 border、padding、inline content、height、min-height、 max-height 分隔时，就会发生下外边距合并 现象。
+3. 空块元素
+
+如果存在一个空的块级元素，其 border、padding、inline content、height、min-height 都不存在。那么此时它的上下边距中间将没有任何阻隔，此时它的上下外边距将会合并。例如：
+```html
+<p style="margin-bottom: 0px;">这个段落的和下面段落的距离将为20px</p>
+
+<div style="margin-top: 20px; margin-bottom: 20px;"></div>
+
+<p style="margin-top: 0px;">这个段落的和上面段落的距离将为20px</p>
+```
+### 👉 发生margin合并的原因
+#### margin 合并的条件
+1. 必须是处于常规文档流（非float和绝对定位）的块级盒子,并且处于同一个 BFC 当中。
+2. 没有inline盒子，没有 padding 和 border 将他们分隔开。
+3. 都属于垂直方向上相邻的外边距。
+#### margin 合并的初衷
+Collapsing margins 的初衷就是为了让段落显示的更加好看。以由几个段落组成的典型文本页面为例。第一个段落上面的空间等于段落的上外边距。如果没有外边距合并，后续所有段落之间的外边距都将是相邻上外边距和下外边距的和。这意味着段落之间的空间是页面顶部的两倍。如果发生外边距合并，段落之间的上外边距和下外边距就合并在一起，这样各处的距离就一致了。
+
+![](/image/外边距合并初衷.png)
+
+### 👉 如何解决margin合并
+只要不满足合并条件即可。
+#### 兄弟元素的margin合并
+让两个元素不处于同一个BFC，比如float、inline-block、绝对定位会创建一个BFC。[测试效果](https://jsfiddle.net/22oacowm/3/)
+#### 父子元素的margin合并
+1. 使父元素形成一个BFC，比如overflow。
+2. 父元素增加border或者padding。
+
+[测试效果](https://jsfiddle.net/22oacowm/5/)
+### 👉 什么是BFC
+在普通的文档流中，盒子会参与一种格式上下文，这个盒子可能是块盒也可能是行内盒，但不可能同时是块盒又是行内盒。块级盒参与块级格式上下文(***BFC***)，行内级盒参与行级格式上下文(***IFC***)。
+
+BFC(***Block formatting contexts***)的形成：浮动，绝对定位元素，display属性为inline-boxs、table-cells、table-captions的不是块盒的块容器(除非这个值已经被传播到视口)，以及当overflow不为visible的块盒才会为它的内容创建新的BFC。总结来说就是：
+1. float 的值不为 none
+2. position 的值不为 static 或 relative(absolute 和 fixed)
+3. display 的值为 table-cell、table-caption、inline-block、flex 或 inline-flex
+4. overflow 的值不为 visibility(hidden 和 auto)
+
+BFC的特性：
+1. 在 BFC 中，盒子都是从它的包含块的顶部一个一个的垂直放置的。两个相邻盒子的垂直间距决定于 margin 属性。在 BFC 中，两个相邻块级盒子之间垂直方向上的外边距是会折叠的。
+2. 在 BFC 中，每个盒子的左外边界挨着包含块的左边界(对于从右到左的格式化，则为右边界互相挨着)。即使是存在浮动元素也是如此(即使一个盒子的行盒是因为浮动而收缩了的)，除非这个盒子建立了一个新的 BFC(在某些情况下这个盒子自身会因为浮动而变窄)。
+
+
+> 参考资料：
+> 
+> [外边距合并](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing)
+> 
+> [你不知道的 CSS 秘密：margin篇](http://www.jianshu.com/p/851b7483f700)
+
 ## 元素居中
 ### 水平居中
 inline 元素：`text-align: center`
