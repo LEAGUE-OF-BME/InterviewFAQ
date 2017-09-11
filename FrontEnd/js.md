@@ -1370,6 +1370,10 @@ function cssStyle2DomStyle(sName) {
 }
 ```
 ```javascript
+> 统计字符串中每个字符的出现频率，返回一个 Object，key 为统计字符，value 为出现频率
+> 1. 不限制 key 的顺序
+> 2. 输入的字符串参数不会为空
+> 3. 忽略空白字符
 function count(str) {
   var res = {}
   str.split("").forEach(function (item) {
@@ -1382,6 +1386,86 @@ function count(str) {
   var obj = {}
   str.replace(/\S/g, function (s) { !obj[s] ? obj[s] = 1 : obj[s]++ })
   return obj
+}
+```
+```javascript
+Array.prototype.swap = function (x, y) {
+  var b = this[x]
+  this[x] = this[y]
+  this[y] = b
+}
+Array.prototype.bubbleSort = function () {
+  var flag = true
+  for (var i = this.length - 1; i > 0; i--) {
+    if (flag) {
+      flag = false
+      for (var j = 0; j < i; j++) {
+        if (this[j] > this[j + 1]) {
+          this.swap(j, j + 1)
+          flag = true
+        }
+      }
+    } else return
+  }
+}
+Array.prototype.chooseSort = function () {
+  for (var i = 0, len = this.length; i < len - 1; i++) {
+    var min = i
+    for (var j = i + 1; j < len; j++) {
+      this[j] < this[min] && (min = j)
+    }
+    this.swap(i, min)
+  }
+}
+Array.prototype.insertSort = function () {
+  for (var i = 1, len = this.length; i < len; i++) {
+    for (var j = i - 1; j >= 0; j--) {
+      this[j] > this[j + 1] && this.swap(j, j + 1)
+    }
+  }
+}
+function merge(left, right) {
+  var result = []
+  while(left.length > 0 && right.length > 0) {
+    left[0] < right[0] && result.push(left.shift())
+    left[0] >= right[0] && result.push(right.shift())
+  }
+  return result.concat(left).concat(right)
+}
+function mergeSort(arr) {
+  if (arr.length == 1) return arr
+  var mid = ~~(arr.length / 2)
+  return merge(mergeSort(arr.slice(0, mid)), mergeSort(arr.slice(mid)))
+}
+function maxHeapify(arr, b, e) {
+  var cur = b, child = cur * 2 + 1
+  while (child < e) {
+    child + 1 < e && arr[child] < arr[child + 1] && child++
+    if (arr[cur] < arr[child]) {
+      arr.swap(cur, child)
+      cur = child
+      child = cur * 2 + 1
+    }
+    else break
+  }
+}
+function heapSort(arr) {
+  var len = arr.length
+  for (var i = ~~(len / 2) - 1; i >= 0; i--) maxHeapify(arr, i, len)
+  for (var i = len - 1; i > 0; i--) {
+    arr.swap(0, i)
+    maxHeapify(arr, 0, i)
+  }
+}
+function quickSort(arr) {
+  if (arr.length <= 1) return arr
+  var pivot = arr.splice(~~(arr.length / 2), 1)[0]
+  var left = [], right = []
+  arr.forEach(function (item, i) {
+    arr[i] < pivot && left.push(arr[i])
+    arr[i] >= pivot && right.push(arr[i])
+  })
+  return quickSort(left).concat(pivot, quickSort(right))
 }
 ```
 
