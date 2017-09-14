@@ -124,6 +124,7 @@ HTML5 的 DOCTYPE 声明十分简单：`<!DOCTYPE html>`，charset 声明也十�
 | video | Defines video or movie |
 
 <br>
+
 #### HTML5 新增输入类型和输入属性
 
 **输入类型:**
@@ -187,6 +188,8 @@ web 语义化，不仅可以使机器易于理解，也方便了开发者快速�
 > [HTML5 语义元素](https://www.w3schools.com/html/html5_semantic_elements.asp)
 >
 > [HTML 5的革新——语义化标签(一)](http://www.html5jscss.com/html5-semantics-section.html)
+
+-------------------------
 
 ### 低版本浏览器如何兼容 HTML5 标签
 HTML5的语义化标签以及属性，可以让开发者非常方便地实现清晰的web页面布局，加上CSS3的效果渲染，快速建立丰富灵活的web页面显得非常简单。使用它们能让代码语义化更直观，而且更方便SEO优化。但是HTML5新标签在IE6/IE7/IE8上并不能识别，需要进行JavaScript处理。以下就介绍几种方式。
