@@ -216,3 +216,39 @@ WHERE 子句对被选择的列施加条件，而 HAVING 子句则对 GROUP BY �
 SELECT Id_P, sum(OrderNo) as Num from orders GROUP BY Id_P HAVING sum(OrderNo)<50000
 ```
 
+
+
+## 6.SQL语句各子句执行顺序
+
+![img](http://images2015.cnblogs.com/blog/364303/201609/364303-20160902194453855-1138505594.png)
+
+ 
+
+处理顺序：
+
+**FROM**：对FROM子句中的前两个表执行笛卡尔积（Cartesian product)(交叉联接），生成虚拟表VT1
+
+**ON**：对VT1应用ON筛选器。只有那些使为真的行才被插入VT2。
+
+**OUTER(JOIN)**：如 果指定了OUTER JOIN（相对于CROSS JOIN 或(INNER JOIN),保留表（preserved table：左外部联接把左表标记为保留表，右外部联接把右表标记为保留表，完全外部联接把两个表都标记为保留表）中未找到匹配的行将作为外部行添加到 VT2,生成VT3.如果FROM子句包含两个以上的表，则对上一个联接生成的结果表和下一个表重复执行步骤1到步骤3，直到处理完所有的表为止。
+
+**WHERE**：对VT3应用WHERE筛选器。只有使为true的行才被插入VT4.
+
+**GROUP BY**：按GROUP BY子句中的列列表对VT4中的行分组，生成VT5.
+
+**CUBE|ROLLUP**：把超组(Suppergroups)插入VT5,生成VT6.
+
+**HAVING**：对VT6应用HAVING筛选器。只有使为true的组才会被插入VT7.
+
+**SELECT**：处理SELECT列表，产生VT8.
+
+**DISTINCT**：将重复的行从VT8中移除，产生VT9.
+
+**ORDER BY**：将VT9中的行按ORDER BY 子句中的列列表排序，生成游标（VC10).
+
+**TOP**（LIMIT）：从VC10的开始处选择指定数量或比例的行，生成表VT11,并返回调用者。
+
+注：步骤10，按ORDER BY子句中的列列表排序上步返回的行，返回游标VC10.这一步是第一步也是唯一一步可以使用SELECT列表中的列别名的步骤。这一步不同于其它步骤的 是，它不返回有效的表，而是返回一个游标。SQL是基于集合理论的。集合不会预先对它的行排序，它只是成员的逻辑集合，成员的顺序无关紧要。对表进行排序 的查询可以返回一个对象，包含按特定物理顺序组织的行。ANSI把这种对象称为游标。理解这一步是正确理解SQL的基础。
+
+
+
