@@ -180,10 +180,19 @@ Collapsing margins 的初衷就是为了让段落显示的更加好看。以由�
 - 左右浮动，中间 BFC。缺点：中间栏设置最小宽度无效；中间栏必须放在左右栏后面，这样的话主要内容会比左右两栏后加载。[测试效果](https://jsfiddle.net/o2nhfhe5/7/)
 - float + 负 margin。缺点：由于三栏都是浮动的，所以中间栏的文字会被右栏覆盖。（ps：调试了一会儿没有找到合适的办法避免这个问题，希望大佬们可以在issue中提出更好的办法。）[测试效果](https://jsfiddle.net/o2nhfhe5/4/)
 - flex 布局，设置容器`display: flex`，中间栏`width: 100%`即可。缺点：缩小浏览器时，会挤压左右两栏。[测试效果](https://jsfiddle.net/o2nhfhe5/5/)
+- grid 布局，设置容器`display: grid; grid-template-columns: 固定宽度 auto 固定宽度;`即可。优点：非常简单。缺点：大多浏览器暂不支持。[测试效果](https://jsfiddle.net/o2nhfhe5/9/)
 
 **两栏布局(左固定右适应)**
 
 在实现两栏布局的七种办法中，有一种是通过 BFC 实现的，其原理就是利用上面`进一步理解`提到的第四点：`BFC 区域不会与 BFC 区域外的 float 元素重叠`实现的。关于实现左固定右适应布局的七种办法可以参考这篇文章：[七种实现左侧固定，右侧自适应两栏布局的方法](https://zhuqingguang.github.io/2017/08/16/adapting-two-layout/#双inline-block方案)。
+
+1. 双 inline-block 方案
+2. 双 float 方案
+3. float + margin-left 方案
+4. 使用 absolute + margin-left 方法
+5. 使用 float + BFC 方法
+6. flex 方案
+7. grid 方案
 
 ps：本来想自己好好总结，无意发现这篇文章，我觉得总结得很棒了，所以不再赘述。
 
@@ -200,6 +209,7 @@ ps：本来想自己好好总结，无意发现这篇文章，我觉得总结得
 -------------
 
 ## Flex布局
+
 ## Grid布局
 ## 元素居中
 ### 水平居中
