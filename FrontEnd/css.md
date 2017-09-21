@@ -39,6 +39,36 @@ display: none;
 ## 伪类和伪元素
 
 ## 长文本如何用CSS实现省略号
+```css
+p {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+p:hover {
+  overflow: visible;
+}
+```
+解释：
+
+`white-space`规定了如何处理元素中的空格。
+
+| value | description |
+|-------|-------------|
+| normal | 默认方式：多余的空格被忽略，必要时换行 |
+| nowrap | 多余的空格被忽略，遇见`<br>`换行 |
+| pre | 保留空格，只在换行符换行，类似于`<pre>` |
+| pre-line | 多余的空格被忽略，保留换行符，必要时换行 |
+| pre-wrap | 保留空格和换行符，必要时换行 |
+
+`text-overflow`规定了溢出不显示的内容以何种形式呈现给用户。`css3`新属性。
+
+| value | description |
+|-------|-------------|
+| clip | 默认方式：截断 |
+| ellipsis | 多余部分用省略号 |
+
+-----------------------------
 
 ## BEM
 BEM：**Block**，**Element**，**Modifier**。类似于OOP，BEM是一种用代码和一系列模式来描述现实情况的方法，只考虑程序实体，和程序语言无关。利用BEM原则可以指导网站的构建。遵循统一的原则和规范可以有助于团队协作和沟通。

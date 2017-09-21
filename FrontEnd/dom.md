@@ -70,6 +70,39 @@ HTML使用的是flow based layout，也就是流式布局。所以如果某元�
 
 HTML5 的 DOCTYPE 声明十分简单：`<!DOCTYPE html>`，charset 声明也十分简单：`<meta charset="UTF-8">`。
 ### HTML5 新特性
+#### 与服务器的通信
+**Web Sockets**
+
+**Server-sent events**
+
+**WebRTC**
+
+#### 离线存储
+**在线和离线事件**
+
+**客户端会话和持久化存储**
+
+**IndexedDB**
+
+#### 性能优化
+**Web Workers**
+
+**XMLHttpRequest Level 2**
+
+**History API**
+
+**drag & drop**
+
+**HTML 中的焦点管理**
+
+**requestAnimationFrame**
+#### 设备访问
+**使用Camera API**
+
+**使用地理位置定位**
+
+
+
 #### HTML5 新增标签
 1. 新增语义化/文档结构标签
 

@@ -1253,13 +1253,87 @@ foo.c() // 3
 
 ----------
 
+## Debounce & Throttle
+
+### Debounce
+```javascript
+// basic
+var debounce = function (func, delay) {
+  var inDebounce
+  return function () {
+    clearTimeout(inDebounce)
+    inDebounce = setTimeout(function () {
+      func.apply(this, arguments)
+    }, delay)
+  }
+}
+```
+### Throttle
+```javascript
+// basic
+var throttle = function (func, limit) {
+  var inThrottle, flag =  false
+  var throttled = function () {
+    if (!inThrottle) {
+      func.apply(this, arguments)
+      if (!flag) {
+        inThrottle = setTimeout(function () {
+          inThrottle = false
+        }, limit)
+      }
+    }
+  }
+  function cancel() {
+    if (inThrottle) {
+      clearTimeout(inThrottle)
+      inThrottle = false
+    }
+    flag = true
+  }
+  throttled.cancel = cancel
+  return throttled
+}
+// better
+var throttle = function(func, limit) {
+  var inThrottle, lastFunc, lastRan, flag =  false
+  var throttled =  function() {
+    if (!inThrottle) {
+      func.apply(this, arguments)
+      if (!flag) {
+        lastRan = Date.now()
+        inThrottle = true
+      }
+    } else {
+      clearTimeout(lastFunc)
+      lastFunc = setTimeout(function() {
+        if ((Date.now() - lastRan) >= limit) {
+          func.apply(this, arguments)
+          lastRan = Date.now()
+        }
+      }, limit - (Date.now() - lastRan))
+    }
+  }
+  function cancel() {
+    inThrottle = false
+    flag = true
+  }
+  throttled.cancel = cancel
+  return throttled
+}
+// test
+var a = 0
+var throttled = throttle(function () { console.log(a++) }, 1500)
+window.addEventListener("resize", throttled)
+```
 ## 自己手写的常用小函数
 ```javascript
+// 是否是{}
 function isEmpty(obj) {
   return (Object.prototype.toString.call(obj) == "[object Object]") && (Object.getOwnPropertyNames(obj).length == 0)
 }
 ```
 ```javascript
+// 封装URL中的请求参数为对象
 function getUrlParam(sUrl, sKey) {
   var result = {}
   sUrl.replace(/\??(\w+)=(\w+)&?/g, function (a, k, v) {
@@ -1275,6 +1349,7 @@ function getUrlParam(sUrl, sKey) {
 }
 ```
 ```javascript
+将Date对象格式化为指定格式
 function formatDate(date, format) {
   var obj = {
     yyyy: date.getFullYear(),
@@ -1335,11 +1410,13 @@ for (let i = 1; i <= 5; i++) { 
 }
 ```
 ```javascript
+// 判断email格式是否正确
 function isAvailableEmail(sEmail) {
     return /^\w+(\.\w+)*@\w+(\.\w+)+$/g.test(sEmail)
 }
 ```
 ```javascript
+// 将rgb(r,g,b)格式转换为16进制数值
 function rgb2hex(sRGB) {
   var arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "a", "b", "c", "d", "e", "f"]
   var rgb = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/gi
@@ -1356,6 +1433,7 @@ function rgb2hex(sRGB) {
 }
 ```
 ```javascript
+// 将css属性a-b转换为驼峰格式aB
 function cssStyle2DomStyle(sName) {
   var arr = sName.match(/\w+/g)
   return arr.slice(1).reduce(function (res, item) {
@@ -1389,6 +1467,7 @@ function count(str) {
 }
 ```
 ```javascript
+// 常见排序算法的js实现
 Array.prototype.swap = function (x, y) {
   var b = this[x]
   this[x] = this[y]
