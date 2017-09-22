@@ -840,8 +840,18 @@ setInterval(replaceThing, 1000);
 
 ----------
 
-## 如何实现Ajax请求
-原生的JavaScript代码完成Ajax请求：
+## 如何实现 AJAX 请求
+```javascript
+// 跨浏览器实现
+// Old compatibility code, no longer needed.
+if (window.XMLHttpRequest) { // Mozilla, Safari, IE7+ ...
+    httpRequest = new XMLHttpRequest();
+} else if (window.ActiveXObject) { // IE 6 and older
+    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+}
+```
+
+原生的JavaScript代码完成 AJAX 请求：
 ```javascript
 var xhr = new XMLHttpRequest() // 创建xhr实例
 xhr.onload = function (e) {
@@ -858,7 +868,7 @@ xhr.onerror = function () {} // 请求错误监听事件
 xhr.open("get", url, false) // 请求方法、请求地址、是否异步
 xhr.timeout = 1000 // 超时时间   
 xhr.ontimeout = function () {} // 超时事件监听
-xhr.setRequestHeader(key, val) // 设置自定义头部
+xhr.setRequestHeader(key, val) // 设置自定义头部，比如 POST 时定义好 MIME 类型
 xhr.send(data) // 发送数据：POST请求时发送；GET请求不传参
 xhr = null // 用完之后释放引用，不建议重用
 
@@ -867,9 +877,13 @@ if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {} else {}
 
 // 发送异步请求时监听响应的代码，放在open()之前
 xhr.onreadystatechange = function () {
-  if (xhr.readyState == 4) {
-    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {} else {}
+  try {
+    if (xhr.readyState == 4) {
+      if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {}
+      else {}
+    }
   }
+  catch {}
 }
 ```
 原生的xhr有6个事件：
