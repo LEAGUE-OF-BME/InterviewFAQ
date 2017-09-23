@@ -1262,8 +1262,32 @@ foo.c() // 3
 | `Object.keys(obj)`|  | ✔️ |  | ✔️ |
 | `for...in` |  | ✔️ | ✔️ |  |
 | `Object.getOwnPropertyNames()` | ✔️ |  |  | ✔️ |
+| `for...of` |  | ✔️ |  | ✔️ |
 
 三种方式遍历的顺序是一致的。
+
+**附注：** `for...of` 与 `for...in` 的区别
+
+`for...in` 循环会遍历一个 `object` 所有的可枚举属性。
+
+`for...of` 语法是为各种 `collection` 对象专门定制的，并不适用于所有的 `object`。它会以这种方式迭代出任何拥有 `[Symbol.iterator]` 属性的 `collection` 对象的每个元素。
+
+e.g.
+```javascript
+Object.prototype.objCustom = function () {}; 
+Array.prototype.arrCustom = function () {};
+
+let iterable = [3, 5, 7];
+iterable.foo = "hello";
+
+for (let i in iterable) {
+  console.log(i); // logs 0, 1, 2, "foo", "arrCustom", "objCustom"
+}
+
+for (let i of iterable) {
+  console.log(i); // logs 3, 5, 7
+}
+```
 
 ----------
 
@@ -1339,6 +1363,9 @@ var a = 0
 var throttled = throttle(function () { console.log(a++) }, 1500)
 window.addEventListener("resize", throttled)
 ```
+
+----------------------
+
 ## 自己手写的常用小函数
 ```javascript
 // 是否是{}
