@@ -23,7 +23,7 @@
 	* [背包问题](https://github.com/LEAGUE-OF-BME/InterviewFAQ/blob/master/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98.md)
 	* [LRU算法](https://github.com/LEAGUE-OF-BME/InterviewFAQ/blob/master/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/1.LRU%E7%AE%97%E6%B3%95%EF%BC%88%E7%BC%93%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95%EF%BC%89.md)
 	* [剑指offer（python）](https://github.com/LEAGUE-OF-BME/InterviewFAQ/tree/master/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%89%91%E6%8C%87offer/python)
-	* [基础算法C++实现] (https://github.com/LEAGUE-OF-BME/InterviewFAQ/tree/master/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/C%2B%2B%E5%AE%9E%E7%8E%B0)
+	* [基础算法C++实现](https://github.com/LEAGUE-OF-BME/InterviewFAQ/tree/master/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/C%2B%2B%E5%AE%9E%E7%8E%B0)
 * 数据库
 	* [基础知识](https://github.com/LEAGUE-OF-BME/InterviewFAQ/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.md) 
 	* [SQL语句](https://github.com/LEAGUE-OF-BME/InterviewFAQ/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/SQL%E8%AF%AD%E5%8F%A5%E7%9B%B8%E5%85%B3.md)
