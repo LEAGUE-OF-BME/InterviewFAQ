@@ -48,6 +48,7 @@
 	* [过拟合与解决方法](https://github.com/LEAGUE-OF-BME/InterviewFAQ/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E8%BF%87%E6%8B%9F%E5%90%88.md)
 	* [监督学习总结](https://github.com/LEAGUE-OF-BME/InterviewFAQ/blob/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9B%91%E7%9D%A3%E7%AE%97%E6%B3%95.md)
 	* [非监督学习总结](https://github.com/LEAGUE-OF-BME/InterviewFAQ/edit/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9D%9E%E7%9B%91%E7%9D%A3%E6%80%A7%E7%AE%97%E6%B3%95.md)
+	* [优化方法](https://github.com/LEAGUE-OF-BME/InterviewFAQ/edit/master/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95.md)
 
 
 
