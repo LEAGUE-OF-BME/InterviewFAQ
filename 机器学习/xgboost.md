@@ -11,7 +11,7 @@ $\hat{y}_i^{(t)}$是第t步的预测值，从上式可以看到，是由第t步�
 
 ![](http://latex.codecogs.com/gif.latex?%24%24%5Ctext%7Bobj%7D%5E%7B%28t%29%7D%20%26%20%3D%20%5Csum_%7Bi%3D1%7D%5En%20l%28y_i%2C%20%5Chat%7By%7D_i%5E%7B%28t%29%7D%29%20&plus;%20%5Csum_%7Bi%3D1%7D%5Et%5COmega%28f_i%29%20%5C%5C%20%26%20%3D%20%5Csum_%7Bi%3D1%7D%5En%20l%28y_i%2C%20%5Chat%7By%7D_i%5E%7B%28t-1%29%7D%20&plus;%20f_t%28x_i%29%29%20&plus;%20%5COmega%28f_t%29%20&plus;%20constant%20%24%24)
 
-l是损失函数，常用的是均方误差，也可以是任意二次可微的函数。与GBDT的目标函数相比，xgboost多了正则化项，T为模型的叶子数，w为每个叶子节点的权重。
+l是损失函数，常用的是均方误差，也可以是任意二次可微的函数。与GBDT的目标函数相比，xgboost多了正则化项，T为模型的叶子数，w为每个叶子节点的权重，也就是每个叶子节点的输出值。
 $$\Omega(f) = \gamma T + \frac{1}{2}\lambda \sum_{j=1}^T w_j^2$$
 
 对目标函数做二阶泰勒展开，得到：
@@ -25,10 +25,10 @@ $$\text{obj}^{(t)} = \sum_{i=1}^n [l(y_i, \hat{y}_i^{(t-1)}) + g_i f_t(x_i) + \f
 ![](http://latex.codecogs.com/gif.latex?%24%24%5Cbegin%7Balign%7D%5Ctext%7Bobj%7D%5E%7B%28t%29%7D%20%26%5Capprox%20%5Csum_%7Bi%3D1%7D%5En%20%5Bg_i%20w_%7Bq%28x_i%29%7D%20&plus;%20%5Cfrac%7B1%7D%7B2%7D%20h_i%20w_%7Bq%28x_i%29%7D%5E2%5D%20&plus;%20%5Cgamma%20T%20&plus;%20%5Cfrac%7B1%7D%7B2%7D%5Clambda%20%5Csum_%7Bj%3D1%7D%5ET%20w_j%5E2%5C%5C%20%26%3D%20%5Csum%5ET_%7Bj%3D1%7D%20%5B%28%5Csum_%7Bi%5Cin%20I_j%7D%20g_i%29%20w_j%20&plus;%20%5Cfrac%7B1%7D%7B2%7D%20%28%5Csum_%7Bi%5Cin%20I_j%7D%20h_i%20&plus;%20%5Clambda%29%20w_j%5E2%20%5D%20&plus;%20%5Cgamma%20T%20%5Cend%7Balign%7D%24%24)
 
 这里$I_j$表示被分到第j个叶子节点的样本集合。进一步令$G_j = \sum_{i\in I_j} g_i$，$H_j = \sum_{i\in I_j} h_i$，代入上式，最终表达式为$$\text{obj}^{(t)} = \sum^T_{j=1} [G_jw_j + \frac{1}{2} (H_j+\lambda) w_j^2] +\gamma T$$
-每个叶子节点是独立的，因此根据二次函数极点的知识，可以确定使目标函数最小的每个w的值和目标函数的最小值为：$$\begin{split}w_j^\ast = -\frac{G_j}{H_j+\lambda}\\
+每个叶子节点是独立的，因此根据二次函数极点的知识，可以确定使目标函数最小的每个叶子节点权重w和目标函数的最小值为：$$\begin{split}w_j^\ast = -\frac{G_j}{H_j+\lambda}\\
 \text{obj}^\ast = -\frac{1}{2} \sum_{j=1}^T \frac{G_j^2}{H_j+\lambda} + \gamma T
 \end{split}$$
-此时，目标函数最小值只跟损失函数的一阶、二阶导数和叶子数有关。推导到这里，如果给定树的结构，那就可以用目标函数来衡量这个树的好坏。现在就需要用这个目标函数来确定树的结构（如何分裂）。
+此时，目标函数最小值只跟损失函数的一阶、二阶导数和叶子数有关，与叶子节点权重无关。推导到这里，如果给定树的结构，那就可以用目标函数来衡量这个树的好坏。现在就需要用这个目标函数来确定树的结构（如何分裂）。
 
 ### 切分算法
 目的是要找到一个切分点，将样本分为左右两部分（L和R）。类似CART决策树的基尼指数，xgboost根据上文推导的目标函数，定义切分的增益:
